@@ -1,11 +1,8 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
-#include <cmath>
 #include <string>
 #include <iomanip>
-#include <chrono>
-#include <cstdlib>
 
 /**
  * Representação de uma pessoa.
