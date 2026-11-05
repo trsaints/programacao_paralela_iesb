@@ -18,6 +18,43 @@ struct IntervaloClasse
     int frequencia_fi;
 };
 
+void cv_exibir_resultados(
+    const std::string &nome_variavel,
+    double valor_min,
+    double valor_max,
+    double h,
+    int k_classes,
+    double media_ponderada_mu,
+    double desvio_padrao_sigma,
+    double cv,
+    const std::vector<IntervaloClasse> &tabela_intervalos)
+{
+    // Resultados
+    std::cout << "\n---------------------------------------------------------" << std::endl;
+    std::cout << "Variável Analisada: " << nome_variavel << std::endl;
+    std::cout << "Mínimo: " << valor_min << " | Máximo: " << valor_max << std::endl;
+    std::cout << "Amplitude de Classe (h): " << h << std::endl;
+    std::cout << "Total de Classes (k): " << k_classes << std::endl;
+    std::cout << std::fixed << std::setprecision(4);
+
+    std::cout << "Média Ponderada (mu): " << media_ponderada_mu << std::endl;
+    std::cout << "Desvio Padrão (sigma): " << desvio_padrao_sigma << std::endl;
+    std::cout << "Coeficiente de Variação (CV): " << cv << "%" << std::endl;
+    std::cout << "---------------------------------------------------------" << std::endl;
+
+    // Classes
+    std::cout << "Distribuição de Frequências: " << std::endl;
+    std::cout << "Classe\t[Limite Inferior, Limite Superior)\tPonto Médio (xi)\tFrequência (fi)" << std::endl;
+
+    for (int i = 0; i < k_classes; i++)
+    {
+        std::cout << i << "\t[" << std::setw(8) << tabela_intervalos[i].lim_inferior
+                  << ", " << std::setw(8) << tabela_intervalos[i].lim_superior << ")\t"
+                  << std::setw(12) << tabela_intervalos[i].ponto_medio_xi << "\t\t"
+                  << std::setw(8) << tabela_intervalos[i].frequencia_fi << std::endl;
+    }
+}
+
 void cv_executar_serial(const std::vector<double> &amostra, double h, const std::string &nome_variavel)
 {
     int n = amostra.size();
@@ -94,41 +131,6 @@ void cv_executar_serial(const std::vector<double> &amostra, double h, const std:
 
     // Coeficiente de Variação (CV)
     double cv = (desvio_padrao_sigma / media_ponderada_mu) * 100.00;
-}
 
-void cv_exibir_resultados(
-    const std::string &nome_variavel,
-    double valor_min,
-    double valor_max,
-    double h,
-    int k_classes,
-    double media_ponderada_mu,
-    double desvio_padrao_sigma,
-    double cv,
-    const std::vector<IntervaloClasse> &tabela_intervalos)
-{
-    // Resultados
-    std::cout << "\n---------------------------------------------------------" << std::endl;
-    std::cout << "Variável Analisada: " << nome_variavel << std::endl;
-    std::cout << "Mínimo: " << valor_min << " | Máximo: " << valor_max << std::endl;
-    std::cout << "Amplitude de Classe (h): " << h << std::endl;
-    std::cout << "Total de Classes (k): " << k_classes << std::endl;
-    std::cout << std::fixed << std::setprecision(4);
-
-    std::cout << "Média Ponderada (mu): " << media_ponderada_mu << std::endl;
-    std::cout << "Desvio Padrão (sigma): " << desvio_padrao_sigma << std::endl;
-    std::cout << "Coeficiente de Variação (CV): " << cv << "%" << std::endl;
-    std::cout << "---------------------------------------------------------" << std::endl;
-
-    // Classes
-    std::cout << "Distribuição de Frequências: " << std::endl;
-    std::cout << "Classe\t[Limite Inferior, Limite Superior)\tPonto Médio (xi)\tFrequência (fi)" << std::endl;
-
-    for (int i = 0; i < k_classes; i++)
-    {
-        std::cout << i << "\t[" << std::setw(8) << tabela_intervalos[i].lim_inferior
-                  << ", " << std::setw(8) << tabela_intervalos[i].lim_superior << ")\t"
-                  << std::setw(12) << tabela_intervalos[i].ponto_medio_xi << "\t\t"
-                  << std::setw(8) << tabela_intervalos[i].frequencia_fi << std::endl;
-    }
+    cv_exibir_resultados(nome_variavel, valor_min, valor_max, h, k_classes, media_ponderada_mu, desvio_padrao_sigma, cv, tabela_intervalos);
 }

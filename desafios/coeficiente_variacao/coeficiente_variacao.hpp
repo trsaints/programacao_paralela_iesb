@@ -44,14 +44,6 @@ struct CvIntervaloClasse
 };
 
 /**
- * Calcula o Coeficiente de Variação (CV) de uma amostra de dados, de maneira sequencial.
- * @param amostra o conjunto de dados para executar a classificação
- * @param h a amplitude de `amostra`
- * @param rotulo_atributo o rótulo para descrever o conjunto de dados
- */
-void cv_executar_serial(const std::vector<double> &amostra, double h, const std::string &rotulo_atributo);
-
-/**
  * Realiza a exibição do cálculo de Coeficiente de variação
  */
 void cv_exibir_resultados(
@@ -64,3 +56,11 @@ void cv_exibir_resultados(
     double desvio_padrao_sigma,
     double cv,
     const std::vector<CvIntervaloClasse> &tabela_intervalos);
+
+/**
+ * Calcula o Coeficiente de Variação (CV) de uma amostra de dados, de maneira sequencial.
+ * @param amostra o conjunto de dados para executar a classificação
+ * @param h a amplitude de `amostra`
+ * @param rotulo_atributo o rótulo para descrever o conjunto de dados
+ */
+void cv_executar_serial(const std::vector<double> &amostra, double h, const std::string &rotulo_atributo);
