@@ -59,8 +59,16 @@ void cv_exibir_resultados(
 
 /**
  * Calcula o Coeficiente de Variação (CV) de uma amostra de dados, de maneira sequencial.
- * @param amostra o conjunto de dados para executar a classificação
- * @param h a amplitude de `amostra`
- * @param rotulo_atributo o rótulo para descrever o conjunto de dados
+ * @param amostra o conjunto de dados para executar a classificação.
+ * @param h a amplitude de `amostra`.
+ * @param rotulo_atributo o rótulo para descrever o conjunto de dados.
  */
 void cv_executar_serial(const std::vector<double> &amostra, double h, const std::string &rotulo_atributo);
+
+/**
+ * Calcula o Coeficiente de Variação (CV) de uma amostra de dados, de maneira paralelizada (via OpenMP).
+ * @param amostra o conjunto de dados para executar a classificação.
+ * @param h a amplitude de `amostra`.
+ * @param rotulo_atributo o rótulo para descrever o conjunto de dados.
+ */
+void cv_executar_paralelo(const std::vector<double> &amostra, double h, const std::string &rotulo_atributo);

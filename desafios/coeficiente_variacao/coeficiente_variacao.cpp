@@ -3,6 +3,7 @@
 #include <fstream>
 #include <cmath>
 #include <iomanip>
+#include <omp.h>
 
 struct Pessoa
 {
@@ -140,4 +141,92 @@ void cv_executar_serial(const std::vector<double> &amostra, double h, const std:
     double cv = (desvio_padrao_sigma / media_ponderada_mu) * 100.00;
 
     cv_exibir_resultados(nome_variavel, valor_min, valor_max, h, k_classes, media_ponderada_mu, desvio_padrao_sigma, cv, tabela_intervalos);
+}
+
+void cv_executar_paralelo(const std::vector<double> &amostra, double h, const std::string &rotulo_atributo)
+{
+    int n = amostra.size();
+
+    if (n == 0)
+        return;
+
+    double valor_min = amostra[0];
+    double valor_max = amostra[0];
+
+    for (int i = 1; i < n; i++)
+    {
+        if (amostra[i] < valor_min)
+            valor_min = amostra[i];
+
+        if (amostra[i] > valor_max)
+            valor_max = amostra[i];
+    }
+
+    std::vector<CvIntervaloClasse> tabela_intervalos;
+    double cursor = valor_min;
+
+    while (cursor < valor_max)
+    {
+        CvIntervaloClasse intervalo;
+
+        intervalo.lim_inferior = cursor;
+        intervalo.lim_superior = cursor + h;
+        intervalo.ponto_medio_xi = (intervalo.lim_inferior + intervalo.lim_superior) / 2.0;
+        intervalo.frequencia_fi = 0;
+
+        tabela_intervalos.push_back(intervalo);
+
+        cursor += h;
+    }
+
+    int k_classes = tabela_intervalos.size();
+
+// Contagem Parelela com Histograma Local (evita race condition)
+#pragma omp parallel
+    {
+        std::vector<int> frequencia_local(k_classes, 0);
+
+#pragma omp for schedule(static) nowait
+        for (int i = 0; i < n; i++)
+        {
+            int idx = (int)((amostra[i] - valor_min) / h);
+
+            if (idx >= k_classes)
+                idx = k_classes - 1;
+
+            frequencia_local[idx]++;
+        }
+
+        for (int c = 0; c < k_classes; c++)
+        {
+#pragma omp atomic
+            tabela_intervalos[c].frequencia_fi += frequencia_local[c];
+        }
+    }
+
+    // Média Ponderada paralela
+    double soma_ponderada = 0.0;
+
+#pragma omp parallel for reduction(+ : soma_ponderada) schedule(static)
+    for (int i = 0; i < k_classes; i++)
+    {
+        soma_ponderada += tabela_intervalos[i].ponto_medio_xi * tabela_intervalos[i].frequencia_fi;
+    }
+
+    double media_ponderada_mu = soma_ponderada / n;
+
+    // Desvio Padrão paralelo
+    double soma_desvios_quad = 0.0;
+
+#pragma omp parallel for reduction(+ : soma_desvios_quad) schedule(static)
+    for (int i = 0; i < k_classes; i++)
+    {
+        double diferenca = tabela_intervalos[i].ponto_medio_xi - media_ponderada_mu;
+        soma_desvios_quad += tabela_intervalos[i].frequencia_fi * pow(diferenca, 2);
+    }
+
+    double desvio_padrao_sigma = sqrt(soma_desvios_quad / n);
+    double cv = (desvio_padrao_sigma / media_ponderada_mu) * 100.0;
+
+    cv_exibir_resultados(rotulo_atributo + " [PARALELO OpenMP]", valor_min, valor_max, h, k_classes, media_ponderada_mu, desvio_padrao_sigma, cv, tabela_intervalos);
 }
