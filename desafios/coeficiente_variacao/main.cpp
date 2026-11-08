@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
     (void)cv_executar_serial(peso);
 
     // Aquecimento paralelo para cada tamanho de equipe.
-    for (int threads = 2; threads <= 16; ++threads)
+    for (int threads = 1; threads <= 16; ++threads)
     {
         omp_set_num_threads(threads);
         (void)cv_executar_paralelo(estatura);
@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
         ((omp_get_wtime() - inicio) / repeticoes) * 1'000'000.0;
 
     // Mede o caminho paralelo para cada quantidade de threads.
-    for (int threads = 2; threads <= 16; ++threads)
+    for (int threads = 1; threads <= 16; ++threads)
     {
         omp_set_num_threads(threads);
 
