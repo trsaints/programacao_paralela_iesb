@@ -3,7 +3,7 @@
 #include <fstream>
 #include <cmath>
 #include <iomanip>
-#include <omp.h>
+
 using namespace std;
 
 struct CvPessoa
