@@ -1,8 +1,12 @@
+#ifndef COEFICIENTE_VARIACAO_HPP
+#define COEFICIENTE_VARIACAO_HPP
+
 #include <iostream>
 #include <vector>
 #include <fstream>
 #include <string>
 #include <iomanip>
+using namespace std;
 
 /**
  * Representação de uma pessoa.
@@ -44,10 +48,16 @@ struct CvIntervaloClasse
 };
 
 /**
+ * Carrega um dataset para classificação de um arquivo de dados .txt.
+ *
+ */
+bool cv_carregar_dados(const string &caminho_arquivo, vector<CvPessoa> &pessoas);
+
+/**
  * Realiza a exibição do cálculo de Coeficiente de variação
  */
 void cv_exibir_resultados(
-    const std::string &nome_variavel,
+    const string &nome_variavel,
     double valor_min,
     double valor_max,
     double h,
@@ -55,7 +65,7 @@ void cv_exibir_resultados(
     double media_ponderada_mu,
     double desvio_padrao_sigma,
     double cv,
-    const std::vector<CvIntervaloClasse> &tabela_intervalos);
+    const vector<CvIntervaloClasse> &tabela_intervalos);
 
 /**
  * Calcula o Coeficiente de Variação (CV) de uma amostra de dados, de maneira sequencial.
@@ -63,7 +73,7 @@ void cv_exibir_resultados(
  * @param h a amplitude de `amostra`.
  * @param rotulo_atributo o rótulo para descrever o conjunto de dados.
  */
-void cv_executar_serial(const std::vector<double> &amostra, double h, const std::string &rotulo_atributo);
+void cv_executar_serial(const vector<double> &amostra, double h, const string &rotulo_atributo);
 
 /**
  * Calcula o Coeficiente de Variação (CV) de uma amostra de dados, de maneira paralelizada (via OpenMP).
@@ -71,4 +81,6 @@ void cv_executar_serial(const std::vector<double> &amostra, double h, const std:
  * @param h a amplitude de `amostra`.
  * @param rotulo_atributo o rótulo para descrever o conjunto de dados.
  */
-void cv_executar_paralelo(const std::vector<double> &amostra, double h, const std::string &rotulo_atributo);
+void cv_executar_paralelo(const vector<double> &amostra, double h, const string &rotulo_atributo);
+
+#endif // COEFICIENTE_VARIACAO_HPP

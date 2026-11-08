@@ -4,8 +4,9 @@
 #include <cmath>
 #include <iomanip>
 #include <omp.h>
+using namespace std;
 
-struct Pessoa
+struct CvPessoa
 {
     double estatura;
     double peso;
@@ -19,8 +20,34 @@ struct CvIntervaloClasse
     int frequencia_fi;
 };
 
+bool cv_carregar_dados(const string &caminho_arquivo, vector<CvPessoa> &pessoas)
+{
+    ifstream arquivo(caminho_arquivo);
+
+    if (!arquivo.is_open())
+    {
+        cerr << "Erro ao abrir o arquivo: " << caminho_arquivo << endl;
+
+        return false;
+    }
+
+    pessoas.clear();
+    pessoas.reserve(1000);
+
+    CvPessoa p;
+
+    while (arquivo >> p.estatura >> p.peso)
+    {
+        pessoas.push_back(p);
+    }
+
+    arquivo.close();
+
+    return !pessoas.empty();
+}
+
 void cv_exibir_resultados(
-    const std::string &nome_variavel,
+    const string &nome_variavel,
     double valor_min,
     double valor_max,
     double h,
@@ -28,7 +55,7 @@ void cv_exibir_resultados(
     double media_ponderada_mu,
     double desvio_padrao_sigma,
     double cv,
-    const std::vector<CvIntervaloClasse> &tabela_intervalos)
+    const vector<CvIntervaloClasse> &tabela_intervalos)
 {
     // Resultados
     std::cout << "\n---------------------------------------------------------" << std::endl;
@@ -63,7 +90,7 @@ void cv_exibir_resultados(
     }
 }
 
-void cv_executar_serial(const std::vector<double> &amostra, double h, const std::string &nome_variavel)
+void cv_executar_serial(const vector<double> &amostra, double h, const string &nome_variavel)
 {
     int n = amostra.size();
 
@@ -143,7 +170,7 @@ void cv_executar_serial(const std::vector<double> &amostra, double h, const std:
     cv_exibir_resultados(nome_variavel, valor_min, valor_max, h, k_classes, media_ponderada_mu, desvio_padrao_sigma, cv, tabela_intervalos);
 }
 
-void cv_executar_paralelo(const std::vector<double> &amostra, double h, const std::string &rotulo_atributo)
+void cv_executar_paralelo(const vector<double> &amostra, double h, const string &rotulo_atributo)
 {
     int n = amostra.size();
 
