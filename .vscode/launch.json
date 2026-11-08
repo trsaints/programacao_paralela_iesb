@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Depurar coeficiente_variacao",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/desafios/coeficiente_variacao/main.out",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/desafios/coeficiente_variacao",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "preLaunchTask": "C/C++: build coeficiente_variacao"
+        }
+    ]
+}

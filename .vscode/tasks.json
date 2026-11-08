@@ -1,0 +1,29 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "C/C++: build coeficiente_variacao",
+            "command": "/usr/bin/g++",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-g",
+                "-O0",
+                "${workspaceFolder}/desafios/coeficiente_variacao/main.cpp",
+                "${workspaceFolder}/desafios/coeficiente_variacao/coeficiente_variacao.cpp",
+                "-o",
+                "${workspaceFolder}/desafios/coeficiente_variacao/main.out"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/desafios/coeficiente_variacao"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
