@@ -3,6 +3,7 @@
 #include <fstream>
 #include <cmath>
 #include <iomanip>
+#include <sstream>
 #include "coeficiente_variacao.hpp"
 
 using namespace std;
@@ -243,4 +244,72 @@ CvResultado cv_executar_paralelo(const CvParametros &parametros)
     resultado.valor = (resultado.desvio / resultado.media) * 100.0;
 
     return resultado;
+}
+
+void cv_exibir_comparativo(
+    const string &caminho_arquivo,
+    size_t quantidade_pessoas,
+    const vector<CvPerfilamento> &perfis)
+{
+    const int larguras[] = {8, 8, 13, 15, 10, 14, 23, 23};
+
+    auto imprimir_separador = [&]()
+    {
+        cout << '+';
+
+        for (int largura : larguras)
+            cout << string(largura + 2, '-') << '+';
+
+        cout << '\n';
+    };
+
+    auto formatar_cv = [](double serial, double paralelo)
+    {
+        ostringstream celula;
+
+        celula << fixed << setprecision(4)
+               << setw(8) << serial << " / " << setw(8) << paralelo;
+
+        return celula.str();
+    };
+
+    cout << fixed;
+    cout << "Dataset: " << caminho_arquivo
+         << " (" << quantidade_pessoas << " pessoas)\n\n";
+
+    imprimir_separador();
+    cout << "| " << left
+         << setw(larguras[0]) << "Pedido"
+         << " | " << setw(larguras[1]) << "Equipe"
+         << " | " << right << setw(larguras[2]) << "Serial (us)"
+         << " | " << setw(larguras[3]) << "Paralelo (us)"
+         << " | " << setw(larguras[4]) << "Speedup"
+         << " | " << setw(larguras[5]) << "Efic. (%)"
+         << " | " << left << setw(larguras[6]) << "CV estatura (S / P)"
+         << " | " << setw(larguras[7]) << "CV peso (S / P)"
+         << " |\n";
+    imprimir_separador();
+
+    for (const auto &p : perfis)
+    {
+        cout << "| " << left
+             << setw(larguras[0]) << p.threads_solicitadas
+             << " | " << setw(larguras[1]) << p.threads_ativas
+             << " | " << right << setprecision(2)
+             << setw(larguras[2]) << p.tempo_serial_us
+             << " | " << setw(larguras[3]) << p.tempo_paralelo_us
+             << " | " << setprecision(3)
+             << setw(larguras[4]) << p.speedup
+             << " | " << setprecision(2)
+             << setw(larguras[5]) << p.eficiencia_percentual
+             << " | " << left << setw(larguras[6])
+             << formatar_cv(p.cv_estatura_serial,
+                            p.cv_estatura_paralelo)
+             << " | " << setw(larguras[7])
+             << formatar_cv(p.cv_peso_serial,
+                            p.cv_peso_paralelo)
+             << " |\n";
+    }
+
+    imprimir_separador();
 }

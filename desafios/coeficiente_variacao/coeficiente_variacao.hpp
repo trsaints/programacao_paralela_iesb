@@ -6,6 +6,8 @@
 #include <fstream>
 #include <string>
 #include <iomanip>
+#include <cstddef>
+
 using namespace std;
 
 /// @brief Representação de uma pessoa, para fins de classificação.
@@ -69,6 +71,21 @@ struct CvResultado
     double valor{};
 };
 
+/// @brief Uma linha contendo registros de perfilamento, para fins de análise e comparação.
+struct CvPerfilamento
+{
+    int threads_solicitadas{};
+    int threads_ativas{};
+    double tempo_serial_us{};
+    double tempo_paralelo_us{};
+    double speedup{};
+    double eficiencia_percentual{};
+    double cv_estatura_serial{};
+    double cv_estatura_paralelo{};
+    double cv_peso_serial{};
+    double cv_peso_paralelo{};
+};
+
 /**
  * Carrega um dataset para classificação de um arquivo de dados .txt.
  * @param caminho_arquivo O caminho relativo até o arquivo bruto de dados.
@@ -84,5 +101,14 @@ CvResultado cv_executar_serial(const CvParametros &parametros);
 
 /// @brief Calcula o Coeficiente de Variação (CV) de uma amostra de dados, de maneira paralelizada (via OpenMP).
 CvResultado cv_executar_paralelo(const CvParametros &parametros);
+
+/**
+ * Exibe a tabela comparativa das execuções serial e paralelas.
+ * Os tempos são médias em microssegundos; a eficiência está em porcentagem.
+ */
+void cv_exibir_comparativo(
+    const string &caminho_arquivo,
+    size_t quantidade_pessoas,
+    const vector<CvPerfilamento> &perfis);
 
 #endif // COEFICIENTE_VARIACAO_HPP
