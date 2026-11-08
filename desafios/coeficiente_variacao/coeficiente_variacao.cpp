@@ -78,7 +78,9 @@ CvResultado cv_executar_serial(const CvParametros &parametros)
     {
         cerr << "Erro: amostra vazia para " << parametros.rotulo << endl;
 
-        return;
+        CvResultado r0;
+
+        return r0;
     }
 
     CvResultado resultado;
@@ -154,7 +156,13 @@ CvResultado cv_executar_paralelo(const CvParametros &parametros)
     int n_amostras = parametros.amostra.size();
 
     if (n_amostras == 0)
-        return;
+    {
+        cerr << "Erro: amostra vazia para " << parametros.rotulo << endl;
+
+        CvResultado r0;
+
+        return r0;
+    }
 
     CvResultado resultado;
     resultado.valor_min = parametros.amostra[0];
