@@ -8,7 +8,8 @@
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
-                "-O0",
+                "-fopenmp",
+                "-O0", // Reduzir otimizações facilita depuração
                 "${workspaceFolder}/desafios/coeficiente_variacao/main.cpp",
                 "${workspaceFolder}/desafios/coeficiente_variacao/coeficiente_variacao.cpp",
                 "-o",
