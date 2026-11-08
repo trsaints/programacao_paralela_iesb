@@ -8,79 +8,81 @@
 #include <iomanip>
 using namespace std;
 
-/**
- * Representação de uma pessoa.
- */
+/// @brief Representação de uma pessoa, para fins de classificação.
 struct CvPessoa
 {
-    /**
-     * Estatura em cm.
-     */
-    double estatura;
-    /**
-     * Peso em Kg.
-     */
-    double peso;
+    /// @brief Estatura em centímetros (cm).
+    double estatura{};
+
+    /// @brief Peso em quilogramas (Kg).
+    double peso{};
 };
 
-/**
- * Representa cada um dos intevalos de frequência agrupada (faixas estatísticas).
- */
+/// @brief Representa cada um dos intevalos de frequência agrupada (faixas estatísticas).
 struct CvIntervaloClasse
 {
-    /**
-     * Define a fronteira mínima para a classificação de pessoas.
-     */
-    double lim_inferior;
-    /**
-     * Define a fronteira máxima para a classificação de pessoas. Este desafio delimita o valor para `limite_inf + 8.0`, se usado em altura (cm), ou `limite_inf + 4.0`, se usado em peso (kg).
-     */
-    double lim_superior;
-    /**
-     * Medida aritmética entre o limite inferior e o limite superior da classe. A estatística adota este valor como representativo único de todas as Pessoas em uma determinado InvervaloClasse.
-     */
-    double ponto_medio_xi;
+    /// @brief Define a fronteira mínima para a classificação de pessoas.
+    double lim_inferior{};
 
-    /**
-     * Quantidade de Pessoas cujos valores caíram dentro do intervalo de CvIntervaloClasse em questão, atuando como peso de ponderação da Classe.
-     */
-    int frequencia_fi;
+    /// @brief Define a fronteira máxima para a classificação de pessoas. Este desafio delimita o valor para `limite_inf + 8.0`, se usado em altura (cm), ou `limite_inf + 4.0`, se usado em peso (kg).
+    double lim_superior{};
+
+    /// @brief Representa `xi`: a média aritmética entre o limite inferior e o limite superior da classe. A estatística adota este valor como representativo único de todas as Pessoas em uma determinado InvervaloClasse.
+    double ponto_medio{};
+
+    /// @brief  Representa `fi`: a quantidade de Pessoas cujos valores caíram dentro da classe em questão, atuando como peso de ponderação da classe.
+    int frequencia{};
+};
+
+/// @brief Conjunto de dados e metadados para execução do cálculo de Coeficiente de Variação
+struct CvParametros
+{
+    /// @brief Rótulo de atributo para calcular o CV, para fins de identificação e exibição.
+    string rotulo{};
+
+    /// @brief O conjunto de dados.
+    vector<double> amostra{};
+
+    /// @brief Representa a amplitude (h) a ser aplicada na segregação de classes de dados.
+    double amplitude{};
+};
+
+/// @brief Representa conjunto de dados obtidos após a execução do cálculo de Coeficiente de Variação.
+struct CvResultado
+{
+    /// @brief As classes obtidas a partir do conjunto de dados.
+    vector<CvIntervaloClasse> classes;
+
+    /// @brief O menor valor do conjunto de dados fornecido.
+    double valor_min{};
+
+    /// @brief O maior valor do conjunto de dados fornecido.
+    double valor_max{};
+
+    /// @brief A média ponderada do conjunto de dados fornecido.
+    double media{};
+
+    /// @brief O desvio padrão do conjunto de dados fornecido.
+    double desvio{};
+
+    /// @brief O valor final do Coeficiente de Variação, obtido a partir do conjunto de dados.
+    double valor{};
 };
 
 /**
  * Carrega um dataset para classificação de um arquivo de dados .txt.
- *
+ * @param caminho_arquivo O caminho relativo até o arquivo bruto de dados.
+ * @param pessoas Conjunto de CvPessoa a ser materializado a partir do arquivo bruto de dados.
  */
 bool cv_carregar_dados(const string &caminho_arquivo, vector<CvPessoa> &pessoas);
 
-/**
- * Realiza a exibição do cálculo de Coeficiente de variação
- */
-void cv_exibir_resultados(
-    const string &nome_variavel,
-    double valor_min,
-    double valor_max,
-    double h,
-    int k_classes,
-    double media_ponderada_mu,
-    double desvio_padrao_sigma,
-    double cv,
-    const vector<CvIntervaloClasse> &tabela_intervalos);
+/// @brief Realiza a exibição do cálculo de Coeficiente de variação
+void cv_exibir_resultado(const CvParametros &parametros, const CvResultado &resultado);
 
-/**
- * Calcula o Coeficiente de Variação (CV) de uma amostra de dados, de maneira sequencial.
- * @param amostra o conjunto de dados para executar a classificação.
- * @param h a amplitude de `amostra`.
- * @param rotulo_atributo o rótulo para descrever o conjunto de dados.
- */
-void cv_executar_serial(const vector<double> &amostra, double h, const string &rotulo_atributo);
+/// @brief Calcula o Coeficiente de Variação (CV) de uma amostra de dados, de maneira sequencial.
+CvResultado cv_executar_serial(const CvParametros &parametros);
 
-/**
- * Calcula o Coeficiente de Variação (CV) de uma amostra de dados, de maneira paralelizada (via OpenMP).
- * @param amostra o conjunto de dados para executar a classificação.
- * @param h a amplitude de `amostra`.
- * @param rotulo_atributo o rótulo para descrever o conjunto de dados.
- */
-void cv_executar_paralelo(const vector<double> &amostra, double h, const string &rotulo_atributo);
+/// @brief Calcula o Coeficiente de Variação (CV) de uma amostra de dados, de maneira paralelizada (via OpenMP).
+CvResultado cv_executar_paralelo(const CvParametros &parametros);
 
 #endif // COEFICIENTE_VARIACAO_HPP
