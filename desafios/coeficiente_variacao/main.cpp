@@ -27,15 +27,24 @@ int main(int argc, char *argv[])
     }
 
     omp_set_dynamic(0);
-    const int threads_configuradas = omp_get_max_threads();
-    const int repeticoes = 100;
 
-    // Aquecimento: descarta os resultados e não inclui esta execução na medição.
+    const int repeticoes = 100;
+    vector<CvPerfilamento> perfis;
+    perfis.reserve(15);
+
+    // Aquecimento serial.
     (void)cv_executar_serial(estatura);
     (void)cv_executar_serial(peso);
-    (void)cv_executar_paralelo(estatura);
-    (void)cv_executar_paralelo(peso);
 
+    // Aquecimento paralelo para cada tamanho de equipe.
+    for (int threads = 2; threads <= 16; ++threads)
+    {
+        omp_set_num_threads(threads);
+        (void)cv_executar_paralelo(estatura);
+        (void)cv_executar_paralelo(peso);
+    }
+
+    // Mede a referência serial no mesmo dataset.
     CvResultado resultado_estatura_serial;
     CvResultado resultado_peso_serial;
 
@@ -47,39 +56,61 @@ int main(int argc, char *argv[])
         resultado_peso_serial = cv_executar_serial(peso);
     }
 
-    const double t1 = (omp_get_wtime() - inicio) / repeticoes;
+    const double tempo_serial_us =
+        ((omp_get_wtime() - inicio) / repeticoes) * 1'000'000.0;
 
-    CvResultado resultado_estatura_paralelo;
-    CvResultado resultado_peso_paralelo;
-
-    inicio = omp_get_wtime();
-
-    for (int i = 0; i < repeticoes; ++i)
+    // Mede o caminho paralelo para cada quantidade de threads.
+    for (int threads = 2; threads <= 16; ++threads)
     {
-        resultado_estatura_paralelo = cv_executar_paralelo(estatura);
-        resultado_peso_paralelo = cv_executar_paralelo(peso);
+        omp_set_num_threads(threads);
+
+        int threads_ativas = 0;
+#pragma omp parallel
+        {
+#pragma omp single
+            threads_ativas = omp_get_num_threads();
+        }
+
+        CvResultado resultado_estatura_paralelo;
+        CvResultado resultado_peso_paralelo;
+
+        inicio = omp_get_wtime();
+
+        for (int i = 0; i < repeticoes; ++i)
+        {
+            resultado_estatura_paralelo = cv_executar_paralelo(estatura);
+            resultado_peso_paralelo = cv_executar_paralelo(peso);
+        }
+
+        const double tempo_paralelo_us =
+            ((omp_get_wtime() - inicio) / repeticoes) * 1'000'000.0;
+
+        const double speedup =
+            tempo_paralelo_us > 0.0
+                ? tempo_serial_us / tempo_paralelo_us
+                : 0.0;
+
+        const double eficiencia_percentual =
+            threads_ativas > 0
+                ? speedup / threads_ativas * 100.0
+                : 0.0;
+
+        CvPerfilamento perfilamento{
+            threads,
+            threads_ativas,
+            tempo_serial_us,
+            tempo_paralelo_us,
+            speedup,
+            eficiencia_percentual,
+            resultado_estatura_serial.valor,
+            resultado_estatura_paralelo.valor,
+            resultado_peso_serial.valor,
+            resultado_peso_paralelo.valor};
+
+        perfis.push_back(perfilamento);
     }
 
-    const double tp = (omp_get_wtime() - inicio) / repeticoes;
-
-    // Exibição fica fora da medição.
-    cout << "\nResultados seriais\n";
-    cv_exibir_resultado(estatura, resultado_estatura_serial);
-    cv_exibir_resultado(peso, resultado_peso_serial);
-
-    cout << "\nResultados paralelos\n";
-    cv_exibir_resultado(estatura, resultado_estatura_paralelo);
-    cv_exibir_resultado(peso, resultado_peso_paralelo);
-
-    const double speedup = t1 / tp;
-    const double eficiencia = speedup / threads_configuradas;
-
-    cout << fixed;
-    cout << "\nThreads configuradas: " << threads_configuradas << '\n';
-    cout << "Tempo serial médio: " << t1 << " s\n";
-    cout << "Tempo paralelo médio: " << tp << " s\n";
-    cout << "Speedup: " << speedup << "x\n";
-    cout << "Eficiência: " << eficiencia * 100.0 << "%\n";
+    cv_exibir_comparativo(caminho, pessoas.size(), perfis);
 
     return 0;
 }
