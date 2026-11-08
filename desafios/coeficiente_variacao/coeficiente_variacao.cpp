@@ -44,14 +44,21 @@ void cv_exibir_resultados(
 
     // Classes
     std::cout << "Distribuição de Frequências: " << std::endl;
-    std::cout << "Classe\t[Limite Inferior, Limite Superior)\tPonto Médio (xi)\tFrequência (fi)" << std::endl;
+    std::cout << std::left
+              << std::setw(8) << "Classe" << " | "
+              << std::setw(20) << "Intervalo" << " | "
+              << std::setw(18) << "Ponto medio (xi)" << " | "
+              << std::right << std::setw(15) << "Frequencia (fi)" << '\n';
 
     for (int i = 0; i < k_classes; i++)
     {
-        std::cout << i << "\t[" << std::setw(8) << tabela_intervalos[i].lim_inferior
-                  << ", " << std::setw(8) << tabela_intervalos[i].lim_superior << ")\t"
-                  << std::setw(12) << tabela_intervalos[i].ponto_medio_xi << "\t\t"
-                  << std::setw(8) << tabela_intervalos[i].frequencia_fi << std::endl;
+        const auto &classe = tabela_intervalos[i];
+
+        std::cout << std::left << std::setw(8) << i << " | ["
+                  << std::right << std::setw(8) << classe.lim_inferior << ", "
+                  << std::setw(8) << classe.lim_superior << ") | "
+                  << std::setw(18) << classe.ponto_medio_xi << " | "
+                  << std::setw(15) << classe.frequencia_fi << '\n';
     }
 }
 
