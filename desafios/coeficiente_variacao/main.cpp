@@ -1,7 +1,6 @@
 #include <iostream>
 #include <vector>
-#include <fstream>
-#include <iomanip>
+#include <string>
 #include <omp.h>
 #include "coeficiente_variacao.hpp"
 
@@ -15,66 +14,72 @@ int main(int argc, char *argv[])
     if (!cv_carregar_dados(caminho, pessoas))
         return 1;
 
-    int total = pessoas.size();
+    CvParametros estatura{"Estatura (cm)", {}, 8.0};
+    CvParametros peso{"Peso (kg)", {}, 4.0};
 
-    cout << ">>> Base de dados carregada: " << total << " pessoas. <<<\n"
-         << endl;
+    estatura.amostra.reserve(pessoas.size());
+    peso.amostra.reserve(pessoas.size());
 
-    vector<double> estaturas;
-    vector<double> pesos;
-
-    estaturas.reserve(total);
-    pesos.reserve(total);
-
-    for (const auto &p : pessoas)
+    for (const auto &pessoa : pessoas)
     {
-        estaturas.push_back(p.estatura);
-        pesos.push_back(p.peso);
+        estatura.amostra.push_back(pessoa.estatura);
+        peso.amostra.push_back(pessoa.peso);
     }
 
-    // Execução Sequencial (TI)
-    cout << "\n+--------------------------------------------+" << endl;
-    cout << "|\tINICIANDO PROCESSAMENTO SERIAL (T1)\t|" << endl;
-    cout << "\n+---------------------------------------------+" << endl;
+    omp_set_dynamic(0);
+    const int threads_configuradas = omp_get_max_threads();
+    const int repeticoes = 100;
 
-    double t1_inicio = omp_get_wtime();
+    // Aquecimento: descarta os resultados e não inclui esta execução na medição.
+    (void)cv_executar_serial(estatura);
+    (void)cv_executar_serial(peso);
+    (void)cv_executar_paralelo(estatura);
+    (void)cv_executar_paralelo(peso);
 
-    cv_executar_serial(estaturas, 8.0, "Estatura (cm)");
-    cv_executar_serial(pesos, 4.0, "Peso (kg)");
+    CvResultado resultado_estatura_serial;
+    CvResultado resultado_peso_serial;
 
-    double t1_fim = omp_get_wtime();
-    double t1 = t1_fim - t1_inicio;
+    double inicio = omp_get_wtime();
 
-    // Execução Paralelizada (Tp)
-    cout << "\n+--------------------------------------------+" << endl;
-    cout << "|\tINICIANDO PROCESSAMENTO PARALELO (Tp)\t|" << endl;
-    cout << "\n+---------------------------------------------+" << endl;
+    for (int i = 0; i < repeticoes; ++i)
+    {
+        resultado_estatura_serial = cv_executar_serial(estatura);
+        resultado_peso_serial = cv_executar_serial(peso);
+    }
 
-    int num_threads = omp_get_max_threads();
-    cout << "Threads OpenMP alocadas: " << num_threads << endl;
+    const double t1 = (omp_get_wtime() - inicio) / repeticoes;
 
-    double tp_inicio = omp_get_wtime();
+    CvResultado resultado_estatura_paralelo;
+    CvResultado resultado_peso_paralelo;
 
-    cv_executar_paralelo(estaturas, 8.0, "Estatura (cm)");
-    cv_executar_paralelo(pesos, 4.0, "Peso (kg)");
+    inicio = omp_get_wtime();
 
-    double tp_fim = omp_get_wtime();
-    double tp = tp_fim - tp_inicio;
+    for (int i = 0; i < repeticoes; ++i)
+    {
+        resultado_estatura_paralelo = cv_executar_paralelo(estatura);
+        resultado_peso_paralelo = cv_executar_paralelo(peso);
+    }
 
-    // Relatório
-    double speedup = t1 / tp;
-    double eficiencia = speedup / num_threads;
+    const double tp = (omp_get_wtime() - inicio) / repeticoes;
 
-    cout << "\n+--------------------------------------------+" << endl;
-    cout << "|\tMÉTRICAS DE DESEMPENHO\t|" << endl;
-    cout << "\n+---------------------------------------------+" << endl;
+    // Exibição fica fora da medição.
+    cout << "\nResultados seriais\n";
+    cv_exibir_resultado(estatura, resultado_estatura_serial);
+    cv_exibir_resultado(peso, resultado_peso_serial);
 
-    cout << fixed << setprecision(6);
-    cout << "Tempo Sequencial (T1): " << t1 << " s (" << t1 * 1000.0 << " ms)" << endl;
-    cout << "Tempo Paralelo (Tp): " << tp << " s (" << tp * 1000.0 << " ms)" << endl;
-    cout << "Speedup (S = T1 / Tp): " << speedup << "x" << endl;
-    cout << "Eficiência (E = S / p): " << eficiencia * 100.00 << "%" << endl;
-    cout << "\n+---------------------------------------------+" << endl;
+    cout << "\nResultados paralelos\n";
+    cv_exibir_resultado(estatura, resultado_estatura_paralelo);
+    cv_exibir_resultado(peso, resultado_peso_paralelo);
+
+    const double speedup = t1 / tp;
+    const double eficiencia = speedup / threads_configuradas;
+
+    cout << fixed;
+    cout << "\nThreads configuradas: " << threads_configuradas << '\n';
+    cout << "Tempo serial médio: " << t1 << " s\n";
+    cout << "Tempo paralelo médio: " << tp << " s\n";
+    cout << "Speedup: " << speedup << "x\n";
+    cout << "Eficiência: " << eficiencia * 100.0 << "%\n";
 
     return 0;
 }
