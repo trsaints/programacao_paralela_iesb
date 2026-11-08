@@ -19,7 +19,7 @@ struct CvPessoa
 };
 
 /// @brief Representa cada um dos intevalos de frequência agrupada (faixas estatísticas).
-struct CvIntervaloClasse
+struct CvClasse
 {
     /// @brief Define a fronteira mínima para a classificação de pessoas.
     double lim_inferior{};
@@ -51,7 +51,7 @@ struct CvParametros
 struct CvResultado
 {
     /// @brief As classes obtidas a partir do conjunto de dados.
-    vector<CvIntervaloClasse> classes;
+    vector<CvClasse> classes;
 
     /// @brief O menor valor do conjunto de dados fornecido.
     double valor_min{};
