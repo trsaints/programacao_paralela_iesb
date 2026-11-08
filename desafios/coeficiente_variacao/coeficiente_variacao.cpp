@@ -3,22 +3,9 @@
 #include <fstream>
 #include <cmath>
 #include <iomanip>
+#include "coeficiente_variacao.hpp"
 
 using namespace std;
-
-struct CvPessoa
-{
-    double estatura;
-    double peso;
-};
-
-struct CvIntervaloClasse
-{
-    double lim_inferior;
-    double lim_superior;
-    double ponto_medio_xi;
-    int frequencia_fi;
-};
 
 bool cv_carregar_dados(const string &caminho_arquivo, vector<CvPessoa> &pessoas)
 {
@@ -46,101 +33,95 @@ bool cv_carregar_dados(const string &caminho_arquivo, vector<CvPessoa> &pessoas)
     return !pessoas.empty();
 }
 
-void cv_exibir_resultados(
-    const string &nome_variavel,
-    double valor_min,
-    double valor_max,
-    double h,
-    int k_classes,
-    double media_ponderada_mu,
-    double desvio_padrao_sigma,
-    double cv,
-    const vector<CvIntervaloClasse> &tabela_intervalos)
+void cv_exibir_resultado(const CvParametros &parametros, const CvResultado &resultado)
 {
-    // Resultados
-    std::cout << "\n---------------------------------------------------------" << std::endl;
-    std::cout << "Variável Analisada: " << nome_variavel << std::endl;
-    std::cout << "Mínimo: " << valor_min << " | Máximo: " << valor_max << std::endl;
-    std::cout << "Amplitude de Classe (h): " << h << std::endl;
-    std::cout << "Total de Classes (k): " << k_classes << std::endl;
-    std::cout << std::fixed << std::setprecision(4);
+    int k = resultado.classes.size();
 
-    std::cout << "Média Ponderada (mu): " << media_ponderada_mu << std::endl;
-    std::cout << "Desvio Padrão (sigma): " << desvio_padrao_sigma << std::endl;
-    std::cout << "Coeficiente de Variação (CV): " << cv << "%" << std::endl;
-    std::cout << "---------------------------------------------------------" << std::endl;
+    // Resultados
+    cout << "\n---------------------------------------------------------" << endl;
+    cout << "Variável Analisada: " << parametros.rotulo << endl;
+    cout << "Mínimo: " << resultado.valor_min << " | Máximo: " << resultado.valor_max << endl;
+    cout << "Amplitude de Classe (h): " << parametros.amplitude << endl;
+    cout << "Total de Classes (k): " << k << endl;
+    cout << fixed << setprecision(4);
+
+    cout << "Média Ponderada (mu): " << resultado.media << endl;
+    cout << "Desvio Padrão (sigma): " << resultado.desvio << endl;
+    cout << "Coeficiente de Variação (CV): " << resultado.valor << "%" << endl;
+    cout << "---------------------------------------------------------" << endl;
 
     // Classes
-    std::cout << "Distribuição de Frequências: " << std::endl;
-    std::cout << std::left
-              << std::setw(8) << "Classe" << " | "
-              << std::setw(20) << "Intervalo" << " | "
-              << std::setw(18) << "Ponto medio (xi)" << " | "
-              << std::right << std::setw(15) << "Frequencia (fi)" << '\n';
+    cout << "Distribuição de Frequências: " << endl;
+    cout << left
+         << setw(8) << "Classe" << " | "
+         << setw(20) << "Intervalo" << " | "
+         << setw(18) << "Ponto medio (xi)" << " | "
+         << right << setw(15) << "Frequencia (fi)" << '\n';
 
-    for (int i = 0; i < k_classes; i++)
+    for (int i = 0; i < k; i++)
     {
-        const auto &classe = tabela_intervalos[i];
+        const auto &classe = resultado.classes[i];
 
-        std::cout << std::left << std::setw(8) << i << " | ["
-                  << std::right << std::setw(8) << classe.lim_inferior << ", "
-                  << std::setw(8) << classe.lim_superior << ") | "
-                  << std::setw(18) << classe.ponto_medio_xi << " | "
-                  << std::setw(15) << classe.frequencia_fi << '\n';
+        cout << left << setw(8) << i << " | ["
+             << right << setw(8) << classe.lim_inferior << ", "
+             << setw(8) << classe.lim_superior << ") | "
+             << setw(18) << classe.ponto_medio << " | "
+             << setw(15) << classe.frequencia << '\n';
     }
 }
 
-void cv_executar_serial(const vector<double> &amostra, double h, const string &nome_variavel)
+CvResultado cv_executar_serial(const CvParametros &parametros)
 {
-    int n = amostra.size();
+    int n_amostras = parametros.amostra.size();
 
-    if (n == 0)
+    if (n_amostras == 0)
     {
-        std::cerr << "Erro: amostra vazia para " << nome_variavel << std::endl;
+        cerr << "Erro: amostra vazia para " << parametros.rotulo << endl;
 
         return;
     }
 
-    double valor_min = amostra[0];
-    double valor_max = amostra[0];
+    CvResultado resultado;
+    resultado.valor_min = parametros.amostra[0];
+    resultado.valor_max = parametros.amostra[0];
 
-    for (int i = 1; i < n; i++)
+    for (int i = 1; i < n_amostras; i++)
     {
-        if (amostra[i] < valor_min)
-            valor_min = amostra[i];
-        if (amostra[i] > valor_max)
-            valor_max = amostra[i];
+        if (parametros.amostra[i] < resultado.valor_min)
+            resultado.valor_min = parametros.amostra[i];
+
+        if (parametros.amostra[i] > resultado.valor_max)
+            resultado.valor_max = parametros.amostra[i];
     }
 
     // Construção da tabela de classes
-    std::vector<CvIntervaloClasse> tabela_intervalos;
-    double cursor = valor_min;
+    double cursor = resultado.valor_min;
 
-    while (cursor < valor_max)
+    while (cursor < resultado.valor_max)
     {
-        CvIntervaloClasse intervalo;
+        CvClasse classe;
 
-        intervalo.lim_inferior = cursor;
-        intervalo.lim_superior = cursor + h;
-        intervalo.ponto_medio_xi = (intervalo.lim_inferior + intervalo.lim_superior) / 2.0;
-        intervalo.frequencia_fi = 0;
+        classe.lim_inferior = cursor;
+        classe.lim_superior = cursor + parametros.amplitude;
+        classe.ponto_medio = (classe.lim_inferior + classe.lim_superior) / 2.0;
+        classe.frequencia = 0;
 
-        tabela_intervalos.push_back(intervalo);
+        resultado.classes.push_back(classe);
 
-        cursor += h;
+        cursor += parametros.amplitude;
     }
 
-    int k_classes = tabela_intervalos.size();
+    int k_classes = resultado.classes.size();
 
     // Tabulação das frequências via Mapeamento Direto - O(1)
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < n_amostras; i++)
     {
-        int idx = (int)((amostra[i] - valor_min) / h);
+        int idx = (int)((parametros.amostra[i] - resultado.valor_min) / parametros.amplitude);
 
         if (idx >= k_classes)
             idx = k_classes - 1; // Clamp para não exceder valor_max
 
-        tabela_intervalos[idx].frequencia_fi++;
+        resultado.classes[idx].frequencia++;
     }
 
     // Média Ponderada Populacional (mu)
@@ -148,75 +129,73 @@ void cv_executar_serial(const vector<double> &amostra, double h, const string &n
 
     for (int i = 0; i < k_classes; i++)
     {
-        soma_ponderada += tabela_intervalos[i].ponto_medio_xi * tabela_intervalos[i].frequencia_fi;
+        soma_ponderada += resultado.classes[i].ponto_medio * resultado.classes[i].frequencia;
     }
 
-    double media_ponderada_mu = soma_ponderada / n;
+    resultado.media = soma_ponderada / n_amostras;
 
     // Desvio Padrão Populacional (sigma)
     double soma_desvios_quad = 0.0;
 
     for (int i = 0; i < k_classes; i++)
     {
-        double diferenca = tabela_intervalos[i].ponto_medio_xi - media_ponderada_mu;
-        soma_desvios_quad += tabela_intervalos[i].frequencia_fi * pow(diferenca, 2);
+        double diferenca = resultado.classes[i].ponto_medio - resultado.media;
+        soma_desvios_quad += resultado.classes[i].frequencia * pow(diferenca, 2);
     }
 
-    double desvio_padrao_sigma = sqrt(soma_desvios_quad / n);
+    resultado.desvio = sqrt(soma_desvios_quad / n_amostras);
+    resultado.valor = (resultado.desvio / resultado.media) * 100.00;
 
-    // Coeficiente de Variação (CV)
-    double cv = (desvio_padrao_sigma / media_ponderada_mu) * 100.00;
-
-    cv_exibir_resultados(nome_variavel, valor_min, valor_max, h, k_classes, media_ponderada_mu, desvio_padrao_sigma, cv, tabela_intervalos);
+    return resultado;
 }
 
-void cv_executar_paralelo(const vector<double> &amostra, double h, const string &rotulo_atributo)
+CvResultado cv_executar_paralelo(const CvParametros &parametros)
 {
-    int n = amostra.size();
+    int n_amostras = parametros.amostra.size();
 
-    if (n == 0)
+    if (n_amostras == 0)
         return;
 
-    double valor_min = amostra[0];
-    double valor_max = amostra[0];
+    CvResultado resultado;
+    resultado.valor_min = parametros.amostra[0];
+    resultado.valor_max = parametros.amostra[0];
 
-    for (int i = 1; i < n; i++)
+    for (int i = 1; i < n_amostras; i++)
     {
-        if (amostra[i] < valor_min)
-            valor_min = amostra[i];
+        if (parametros.amostra[i] < resultado.valor_min)
+            resultado.valor_min = parametros.amostra[i];
 
-        if (amostra[i] > valor_max)
-            valor_max = amostra[i];
+        if (parametros.amostra[i] > resultado.valor_max)
+            resultado.valor_max = parametros.amostra[i];
     }
 
-    std::vector<CvIntervaloClasse> tabela_intervalos;
-    double cursor = valor_min;
+    double cursor = resultado.valor_min;
 
-    while (cursor < valor_max)
+    while (cursor < resultado.valor_max)
     {
-        CvIntervaloClasse intervalo;
+        CvClasse classe;
 
-        intervalo.lim_inferior = cursor;
-        intervalo.lim_superior = cursor + h;
-        intervalo.ponto_medio_xi = (intervalo.lim_inferior + intervalo.lim_superior) / 2.0;
-        intervalo.frequencia_fi = 0;
+        classe.lim_inferior = cursor;
+        classe.lim_superior = cursor + parametros.amplitude;
+        classe.ponto_medio = (classe.lim_inferior + classe.lim_superior) / 2.0;
+        classe.frequencia = 0;
 
-        tabela_intervalos.push_back(intervalo);
+        resultado.classes.push_back(classe);
 
-        cursor += h;
+        cursor += parametros.amplitude;
     }
 
-    int k_classes = tabela_intervalos.size();
+    int k_classes = resultado.classes.size();
 
 // Contagem Parelela com Histograma Local (evita race condition)
 #pragma omp parallel
     {
-        std::vector<int> frequencia_local(k_classes, 0);
+        vector<int> frequencia_local(k_classes, 0);
 
 #pragma omp for schedule(static) nowait
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i < n_amostras; i++)
         {
-            int idx = (int)((amostra[i] - valor_min) / h);
+            int idx = (int)((parametros.amostra[i] - resultado.valor_min) / parametros.amplitude);
 
             if (idx >= k_classes)
                 idx = k_classes - 1;
@@ -227,7 +206,7 @@ void cv_executar_paralelo(const vector<double> &amostra, double h, const string 
         for (int c = 0; c < k_classes; c++)
         {
 #pragma omp atomic
-            tabela_intervalos[c].frequencia_fi += frequencia_local[c];
+            resultado.classes[c].frequencia += frequencia_local[c];
         }
     }
 
@@ -237,10 +216,10 @@ void cv_executar_paralelo(const vector<double> &amostra, double h, const string 
 #pragma omp parallel for reduction(+ : soma_ponderada) schedule(static)
     for (int i = 0; i < k_classes; i++)
     {
-        soma_ponderada += tabela_intervalos[i].ponto_medio_xi * tabela_intervalos[i].frequencia_fi;
+        soma_ponderada += resultado.classes[i].ponto_medio * resultado.classes[i].frequencia;
     }
 
-    double media_ponderada_mu = soma_ponderada / n;
+    resultado.media = soma_ponderada / n_amostras;
 
     // Desvio Padrão paralelo
     double soma_desvios_quad = 0.0;
@@ -248,12 +227,12 @@ void cv_executar_paralelo(const vector<double> &amostra, double h, const string 
 #pragma omp parallel for reduction(+ : soma_desvios_quad) schedule(static)
     for (int i = 0; i < k_classes; i++)
     {
-        double diferenca = tabela_intervalos[i].ponto_medio_xi - media_ponderada_mu;
-        soma_desvios_quad += tabela_intervalos[i].frequencia_fi * pow(diferenca, 2);
+        double diferenca = resultado.classes[i].ponto_medio - resultado.media;
+        soma_desvios_quad += resultado.classes[i].frequencia * pow(diferenca, 2);
     }
 
-    double desvio_padrao_sigma = sqrt(soma_desvios_quad / n);
-    double cv = (desvio_padrao_sigma / media_ponderada_mu) * 100.0;
+    resultado.desvio = sqrt(soma_desvios_quad / n_amostras);
+    resultado.valor = (resultado.desvio / resultado.media) * 100.0;
 
-    cv_exibir_resultados(rotulo_atributo + " [PARALELO OpenMP]", valor_min, valor_max, h, k_classes, media_ponderada_mu, desvio_padrao_sigma, cv, tabela_intervalos);
+    return resultado;
 }
