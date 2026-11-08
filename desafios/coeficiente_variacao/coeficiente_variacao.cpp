@@ -10,7 +10,7 @@ struct Pessoa
     double peso;
 };
 
-struct IntervaloClasse
+struct CvIntervaloClasse
 {
     double lim_inferior;
     double lim_superior;
@@ -27,7 +27,7 @@ void cv_exibir_resultados(
     double media_ponderada_mu,
     double desvio_padrao_sigma,
     double cv,
-    const std::vector<IntervaloClasse> &tabela_intervalos)
+    const std::vector<CvIntervaloClasse> &tabela_intervalos)
 {
     // Resultados
     std::cout << "\n---------------------------------------------------------" << std::endl;
@@ -78,12 +78,12 @@ void cv_executar_serial(const std::vector<double> &amostra, double h, const std:
     }
 
     // Construção da tabela de classes
-    std::vector<IntervaloClasse> tabela_intervalos;
+    std::vector<CvIntervaloClasse> tabela_intervalos;
     double cursor = valor_min;
 
     while (cursor < valor_max)
     {
-        IntervaloClasse intervalo;
+        CvIntervaloClasse intervalo;
 
         intervalo.lim_inferior = cursor;
         intervalo.lim_superior = cursor + h;

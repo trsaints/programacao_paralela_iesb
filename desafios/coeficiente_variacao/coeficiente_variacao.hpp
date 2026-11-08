@@ -38,7 +38,7 @@ struct CvIntervaloClasse
     double ponto_medio_xi;
 
     /**
-     * Quantidade de Pessoas cujos valores caíram dentro do intervalo de IntervaloClasse em questão, atuando como peso de ponderação da Classe.
+     * Quantidade de Pessoas cujos valores caíram dentro do intervalo de CvIntervaloClasse em questão, atuando como peso de ponderação da Classe.
      */
     int frequencia_fi;
 };
