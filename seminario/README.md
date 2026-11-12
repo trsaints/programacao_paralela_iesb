@@ -17,11 +17,11 @@ baseline.
 | Makefile unificado | disponível |
 | Script de medição e CSV | disponível |
 | OpenMP | estrutura preparada; fonte não implementada |
-| MPI | estrutura preparada; fonte não implementada |
+| MPI | faixas horizontais, halos, coletivas e validação integral disponíveis; veja [mpi/README.md](mpi/README.md) |
 | Gráficos finais | aguardam dados paralelos válidos |
 | `AUTORES.md` | disponível, mas deve ser preenchido pelo trio |
 
-Os `SKIPPED` exibidos para OpenMP e MPI são intencionais durante o
+Os `SKIPPED` exibidos para fontes ou ferramentas ausentes são intencionais durante o
 desenvolvimento. Eles **não** indicam que a entrega final está completa: antes
 da entrega, as três fontes devem existir e `make check-final` deve terminar sem
 erros.
@@ -92,8 +92,8 @@ comportamento esperado nessa condição.
 | `make clean` | somente quando quiser remover os executáveis gerados |
 | `make check-final` | **somente antes da entrega**, quando as três fontes existirem |
 
-`make check-final` falha de propósito enquanto exigir fontes inexistentes:
-`openmp/04_convolucao_openmp.cpp` e `mpi/04_convolucao_mpi.cpp`.
+`make check-final` falha de propósito enquanto a fonte OpenMP estiver ausente:
+`openmp/04_convolucao_openmp.cpp`.
 
 O Makefile é a interface unificada para a compilação manual. O
 `script_medicao.py` preserva sua automação própria e invoca diretamente `g++`
@@ -166,6 +166,7 @@ mpi/dados/mpi_medicoes.csv             # criado quando MPI estiver pronto
 mpi/dados/mpi_resumo.csv
 dados/metricas.csv                     # T1, Tp, speedup e eficiência
 dados/execucoes_ignoradas.csv          # versões indisponíveis na campanha
+mpi/dados/mpi_overhead.csv            # complemento: comunicação e computação MPI
 ```
 
 A matriz automática de unidades mede **escalabilidade forte** para
@@ -178,8 +179,17 @@ como concluída sem os dados brutos e a metodologia correspondente.
 ## Gráficos sem dependência externa
 
 Importe os CSVs em LibreOffice Calc, Excel ou Google Sheets com codificação
-UTF-8, separador vírgula e decimal ponto. Não há gerador de gráficos nem
-biblioteca Python adicional no projeto.
+UTF-8, separador vírgula e decimal ponto. Para gerar automaticamente os gráficos
+MPI a partir da mesma campanha, execute após `python3 script_medicao.py`:
+
+```sh
+python3 mpi/script_analise.py
+```
+
+O gerador usa somente a biblioteca padrão, lê `dados/metricas.csv` e o
+complemento `mpi/dados/mpi_overhead.csv`, e salva SVGs em `mpi/graficos/`.
+Não compila nem mede novamente. A opção `--test --processos 1 2` desse script
+continua disponível para validação funcional dos casos pequenos.
 
 | Gráfico | Dados de origem |
 | --- | --- |

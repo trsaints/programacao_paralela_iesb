@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="440" viewBox="0 0 920 440">
+<rect width="920" height="440" fill="white"/>
+<text x="75" y="30" font-family="sans-serif" font-size="20">Comunicação (segundos)</text>
+<path d="M75 65V370H715" fill="none" stroke="black"/>
+<text x="340" y="425" font-family="sans-serif">Processos MPI</text>
+<text x="8" y="375.0" font-family="sans-serif">0.00</text>
+<text x="8" y="316.0" font-family="sans-serif">0.05</text>
+<text x="8" y="257.0" font-family="sans-serif">0.09</text>
+<text x="8" y="198.0" font-family="sans-serif">0.14</text>
+<text x="8" y="139.0" font-family="sans-serif">0.18</text>
+<text x="8" y="80.0" font-family="sans-serif">0.23</text>
+<text x="75.0" y="395" font-family="sans-serif">1</text>
+<text x="288.3" y="395" font-family="sans-serif">2</text>
+<text x="715.0" y="395" font-family="sans-serif">4</text>
+<path d="M75.0 370.0L715.0 370.0" stroke="gray" stroke-dasharray="5 5"/>
+<text x="745" y="65" font-family="sans-serif">Ideal (tracejado)</text>
+<polyline points="75.00,368.84 288.33,366.50 715.00,356.82" fill="none" stroke="#2563eb" stroke-width="2"/>
+<circle cx="75.00" cy="368.84" r="4" fill="#2563eb"/>
+<circle cx="288.33" cy="366.50" r="4" fill="#2563eb"/>
+<circle cx="715.00" cy="356.82" r="4" fill="#2563eb"/>
+<text x="745" y="95" fill="#2563eb" font-family="sans-serif">N=1024</text>
+<polyline points="75.00,365.28 288.33,357.37 715.00,277.42" fill="none" stroke="#dc2626" stroke-width="2"/>
+<circle cx="75.00" cy="365.28" r="4" fill="#dc2626"/>
+<circle cx="288.33" cy="357.37" r="4" fill="#dc2626"/>
+<circle cx="715.00" cy="277.42" r="4" fill="#dc2626"/>
+<text x="745" y="120" fill="#dc2626" font-family="sans-serif">N=2048</text>
+<polyline points="75.00,351.22 288.33,332.72 715.00,101.82" fill="none" stroke="#059669" stroke-width="2"/>
+<circle cx="75.00" cy="351.22" r="4" fill="#059669"/>
+<circle cx="288.33" cy="332.72" r="4" fill="#059669"/>
+<circle cx="715.00" cy="101.82" r="4" fill="#059669"/>
+<text x="745" y="145" fill="#059669" font-family="sans-serif">N=4096</text>
+</svg>
