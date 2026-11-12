@@ -1,12 +1,13 @@
 # Relatório Técnico de Baseline e Plano de Perfilamento
 
-> **Status: versão revisada e reproduzível**
+> **Status: dados de desenvolvimento do baseline — não são resultados finais**
 >
-> Esta versão substitui `relatorio_teorico.v1.md` como referência para os
-> resultados atuais do grupo. Os dados experimentais foram gerados por
-> `script_medicao.py` e estão preservados em
+> Esta versão substitui `relatorio_teorico.v1.md` como referência para a análise
+> atual do grupo. Os dados experimentais de desenvolvimento estão preservados em
 > `baseline/dados/baseline_medicoes.csv` e
-> `baseline/dados/baseline_resumo.csv`.
+> `baseline/dados/baseline_resumo.csv`. Antes da entrega/apresentação, os
+> resultados reportados devem ser regenerados no ambiente oficial da disciplina
+> (laboratório ou contêiner Docker equivalente).
 
 **Identificação do trio:** Thiago Rodrigues Santos, Andre Carvalho, Felipe Oliveira
 **Problema escolhido:** Problema 4 — Filtro de convolução 2D (blur)
@@ -150,9 +151,9 @@ comparadas a essa projeção no Marco 2.
 
 ## 5. Metodologia e Protocolo Experimental de Medição
 
-O script `script_medicao.py` recompila o baseline com `g++ -O2`, executa o
-aquecimento e produz os CSVs. Para cada tamanho, a primeira execução é
-descartada e são registradas 10 repetições válidas.
+O script `script_medicao.py` recompila o baseline diretamente com `g++ -O2`,
+executa o aquecimento e produz os CSVs. Para cada tamanho, a primeira execução
+é descartada e são registradas 10 repetições válidas.
 
 | Item | Configuração |
 | --- | --- |
@@ -166,9 +167,10 @@ descartada e são registradas 10 repetições válidas.
 
 As medições desta versão foram executadas no notebook pessoal de Thiago, com
 AMD Ryzen 7 5700U (8 núcleos físicos e 16 threads lógicas), 17 GB de RAM,
-Fedora Linux 44, GCC 16.2.1 e Python 3.14.7. Antes da apresentação, o protocolo
-deve ser repetido na máquina do laboratório, que é o ambiente de referência da
-disciplina.
+Fedora Linux 44, GCC 16.2.1 e Python 3.14.7. Elas devem ser tratadas somente
+como dados de desenvolvimento. Antes da apresentação, o protocolo precisa ser
+repetido no laboratório ou no contêiner Docker oficial; os gráficos e tempos
+finais não devem misturar os dois ambientes.
 
 ## 6. Plano Teórico de Paralelização
 
