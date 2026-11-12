@@ -15,13 +15,12 @@ import re
 import shutil
 import statistics
 import subprocess
-from contextlib import ExitStack
 from dataclasses import dataclass
 from pathlib import Path
 
 
 RAIZ_PROJETO = Path(__file__).resolve().parent
-DIRETORIO_DADOS = RAIZ_PROJETO / "dados"
+DIRETORIO_DADOS_COMPARTILHADOS = RAIZ_PROJETO / "dados"
 
 TAMANHOS_MATRIZ = (1024, 2048, 4096)
 PASSES = 30
@@ -270,34 +269,12 @@ def executar_uma_vez(
     return interpretar_saida(resultado.stdout, implementacao, tamanho)
 
 
-def escrever_linha_baseline_legada(
-    writer: csv.DictWriter,
-    n: int,
-    repeticao: int,
-    checksum: str,
-    tempo_s: float,
-) -> None:
-    """Mantém os CSVs existentes usados pelo relatório V2."""
-    writer.writerow(
-        {
-            "implementacao": "baseline",
-            "n": n,
-            "passes": PASSES,
-            "repeticao": repeticao,
-            "checksum": checksum,
-            "tempo_s": tempo_s,
-        }
-    )
-
-
 def medir_implementacao(
     implementacao: Implementacao,
     referencias_baseline: dict[tuple[int, int], str],
     writer_medicoes: csv.DictWriter,
     writer_resumo: csv.DictWriter,
     writer_metricas: csv.DictWriter,
-    writer_baseline_medicoes: csv.DictWriter,
-    writer_baseline_resumo: csv.DictWriter,
 ) -> None:
     """Executa aquecimento, repetições, validação e estatísticas de uma versão."""
     for unidades in implementacao.unidades:
@@ -345,15 +322,6 @@ def medir_implementacao(
                 }
                 writer_medicoes.writerow(linha_medicao)
 
-                if implementacao.nome == "baseline":
-                    escrever_linha_baseline_legada(
-                        writer_baseline_medicoes,
-                        tamanho,
-                        repeticao,
-                        checksum,
-                        tempo_s,
-                    )
-
             assert checksum_esperado is not None
             tempo_medio = statistics.mean(tempos)
             tempo_mediano = statistics.median(tempos)
@@ -372,20 +340,6 @@ def medir_implementacao(
                 "desvio_padrao_s": desvio_padrao,
             }
             writer_resumo.writerow(linha_resumo)
-
-            if implementacao.nome == "baseline":
-                writer_baseline_resumo.writerow(
-                    {
-                        "implementacao": "baseline",
-                        "n": tamanho,
-                        "passes": PASSES,
-                        "repeticoes": REPETICOES,
-                        "checksum": checksum_esperado,
-                        "tempo_medio_s": tempo_medio,
-                        "tempo_mediano_s": tempo_mediano,
-                        "desvio_padrao_s": desvio_padrao,
-                    }
-                )
 
             referencia = referencias_baseline[(tamanho, PASSES)]
             if checksum_esperado != referencia:
@@ -444,78 +398,26 @@ def executar_campanha() -> None:
     if REPETICOES < 2:
         raise ValueError("REPETICOES deve ser pelo menos 2 para calcular desvio-padrão")
 
-    DIRETORIO_DADOS.mkdir(parents=True, exist_ok=True)
+    DIRETORIO_DADOS_COMPARTILHADOS.mkdir(parents=True, exist_ok=True)
     tempos_referencia.clear()
     referencias_baseline: dict[tuple[int, int], str] = {}
 
-    with ExitStack() as pilha:
-        arquivo_medicoes = pilha.enter_context(
-            (DIRETORIO_DADOS / "medicoes.csv").open("w", newline="", encoding="utf-8")
-        )
-        arquivo_resumo = pilha.enter_context(
-            (DIRETORIO_DADOS / "resumo.csv").open("w", newline="", encoding="utf-8")
-        )
-        arquivo_metricas = pilha.enter_context(
-            (DIRETORIO_DADOS / "metricas.csv").open("w", newline="", encoding="utf-8")
-        )
-        arquivo_ignoradas = pilha.enter_context(
-            (DIRETORIO_DADOS / "execucoes_ignoradas.csv").open(
-                "w", newline="", encoding="utf-8"
-            )
-        )
-        # Compatibilidade com o relatório V2 já produzido.
-        arquivo_baseline_medicoes = pilha.enter_context(
-            (DIRETORIO_DADOS / "baseline_medicoes.csv").open(
-                "w", newline="", encoding="utf-8"
-            )
-        )
-        arquivo_baseline_resumo = pilha.enter_context(
-            (DIRETORIO_DADOS / "baseline_resumo.csv").open(
-                "w", newline="", encoding="utf-8"
-            )
-        )
-
-        writer_medicoes = csv.DictWriter(
-            arquivo_medicoes, fieldnames=COLUNAS_MEDICOES, lineterminator="\n"
-        )
-        writer_resumo = csv.DictWriter(
-            arquivo_resumo, fieldnames=COLUNAS_RESUMO, lineterminator="\n"
-        )
+    with (
+        (DIRETORIO_DADOS_COMPARTILHADOS / "metricas.csv").open(
+            "w", newline="", encoding="utf-8"
+        ) as arquivo_metricas,
+        (DIRETORIO_DADOS_COMPARTILHADOS / "execucoes_ignoradas.csv").open(
+            "w", newline="", encoding="utf-8"
+        ) as arquivo_ignoradas,
+    ):
         writer_metricas = csv.DictWriter(
             arquivo_metricas, fieldnames=COLUNAS_METRICAS, lineterminator="\n"
         )
         writer_ignoradas = csv.DictWriter(
             arquivo_ignoradas, fieldnames=COLUNAS_IGNORADAS, lineterminator="\n"
         )
-        writer_baseline_medicoes = csv.DictWriter(
-            arquivo_baseline_medicoes,
-            fieldnames=("implementacao", "n", "passes", "repeticao", "checksum", "tempo_s"),
-            lineterminator="\n",
-        )
-        writer_baseline_resumo = csv.DictWriter(
-            arquivo_baseline_resumo,
-            fieldnames=(
-                "implementacao",
-                "n",
-                "passes",
-                "repeticoes",
-                "checksum",
-                "tempo_medio_s",
-                "tempo_mediano_s",
-                "desvio_padrao_s",
-            ),
-            lineterminator="\n",
-        )
-
-        for writer in (
-            writer_medicoes,
-            writer_resumo,
-            writer_metricas,
-            writer_ignoradas,
-            writer_baseline_medicoes,
-            writer_baseline_resumo,
-        ):
-            writer.writeheader()
+        writer_metricas.writeheader()
+        writer_ignoradas.writeheader()
 
         for implementacao in IMPLEMENTACOES:
             motivo = preparar_implementacao(implementacao)
@@ -535,21 +437,42 @@ def executar_campanha() -> None:
                 )
                 continue
 
-            medir_implementacao(
-                implementacao,
-                referencias_baseline=referencias_baseline,
-                writer_medicoes=writer_medicoes,
-                writer_resumo=writer_resumo,
-                writer_metricas=writer_metricas,
-                writer_baseline_medicoes=writer_baseline_medicoes,
-                writer_baseline_resumo=writer_baseline_resumo,
-            )
+            diretorio_dados_implementacao = implementacao.fonte.parent / "dados"
+            diretorio_dados_implementacao.mkdir(parents=True, exist_ok=True)
+            with (
+                (diretorio_dados_implementacao / f"{implementacao.nome}_medicoes.csv").open(
+                    "w", newline="", encoding="utf-8"
+                ) as arquivo_medicoes,
+                (diretorio_dados_implementacao / f"{implementacao.nome}_resumo.csv").open(
+                    "w", newline="", encoding="utf-8"
+                ) as arquivo_resumo,
+            ):
+                writer_medicoes = csv.DictWriter(
+                    arquivo_medicoes,
+                    fieldnames=COLUNAS_MEDICOES,
+                    lineterminator="\n",
+                )
+                writer_resumo = csv.DictWriter(
+                    arquivo_resumo,
+                    fieldnames=COLUNAS_RESUMO,
+                    lineterminator="\n",
+                )
+                writer_medicoes.writeheader()
+                writer_resumo.writeheader()
+                medir_implementacao(
+                    implementacao,
+                    referencias_baseline=referencias_baseline,
+                    writer_medicoes=writer_medicoes,
+                    writer_resumo=writer_resumo,
+                    writer_metricas=writer_metricas,
+                )
 
     print("\nPerfilamento finalizado.")
-    print(f"Medições unificadas: {DIRETORIO_DADOS / 'medicoes.csv'}")
-    print(f"Resumo unificado: {DIRETORIO_DADOS / 'resumo.csv'}")
-    print(f"Métricas: {DIRETORIO_DADOS / 'metricas.csv'}")
-    print(f"Execuções ignoradas: {DIRETORIO_DADOS / 'execucoes_ignoradas.csv'}")
+    print(f"Métricas comparativas: {DIRETORIO_DADOS_COMPARTILHADOS / 'metricas.csv'}")
+    print(
+        "Execuções ignoradas: "
+        f"{DIRETORIO_DADOS_COMPARTILHADOS / 'execucoes_ignoradas.csv'}"
+    )
 
 
 def main() -> None:
