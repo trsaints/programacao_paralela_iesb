@@ -9,7 +9,7 @@ python3 script_medicao.py
 
 ## Ambiente experimental
 
-- Máquina: notebook pessoal / laboratório IESB
+Máquina: notebook pessoal (thiago)
 - CPU: AMD Ryzen 7 5700U with Radeon Graphics
 - Núcleos físicos: 8
 - Threads lógicas: 16
