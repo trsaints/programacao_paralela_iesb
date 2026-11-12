@@ -1,3 +1,4 @@
+import csv
 import re
 import subprocess
 
@@ -21,10 +22,11 @@ def executar_baseline(tamanho: int):
         raise ValueError(
             f"Valor {tamanho} não está presente na faixa de tamanhos {TAMANHOS_MATRIZ}")
 
-    return subprocess.run(["./baseline/convolucao.out", str(tamanho), str(PASSES)],
-                          capture_output=True,
-                          text=True,
-                          check=True)
+    return subprocess.run(
+        ["./baseline/convolucao.out", str(tamanho), str(PASSES)],
+        capture_output=True,
+        text=True,
+        check=True)
 
 
 # Compilar
@@ -36,36 +38,59 @@ subprocess.run(
 padrao_saida = re.compile(
     r"N=(\d+)\s+passes=(\d+)\s+checksum=([0-9.+-]+)\s+tempo=([0-9.+-]+)\s+s")
 
-for n in TAMANHOS_MATRIZ:
-    # Loop de Aquecimento: valores descartados
-    for _ in range(AQUECIMENTOS):
-        resultado = executar_baseline(n)
+with open("dados/baseline_medicoes.csv", "w", newline="", encoding="utf-8") as arquivo_medicoes:
+    COLUNAS_CSV = [
+        "implementacao",
+        "n",
+        "passes",
+        "repeticao",
+        "checksum",
+        "tempo_s",
+    ]
 
-    # Para este N e este número de passes, a primeira medição define o checksum
-    # esperado; todas as demais repetições devem retornar o mesmo valor.
-    checksum_esperado = None
+    csv_writer = csv.DictWriter(arquivo_medicoes, fieldnames=COLUNAS_CSV)
+    csv_writer.writeheader()
 
-    # Loop de Execução final: valores capturados
-    for i in range(1, REPETICOES + 1):
-        resultado = executar_baseline(n)
+    for n in TAMANHOS_MATRIZ:
+        # Loop de Aquecimento: valores descartados
+        for _ in range(AQUECIMENTOS):
+            resultado = executar_baseline(n)
 
-        saida_bruta = resultado.stdout.strip()
-        formato_esperado = padrao_saida.match(saida_bruta)
+        # Para este N e este número de passes, a primeira medição define o checksum
+        # esperado; todas as demais repetições devem retornar o mesmo valor.
+        checksum_esperado = None
 
-        if (formato_esperado is None):
-            raise RuntimeError(f"Formato de saída inesperado: {saida_bruta}")
+        # Loop de Execução final: valores capturados
+        for i in range(1, REPETICOES + 1):
+            resultado = executar_baseline(n)
 
-        n_obtido = int(formato_esperado.group(1))
-        passes_obtidos = int(formato_esperado.group(2))
-        checksum = formato_esperado.group(3)
-        tempo_s = float(formato_esperado.group(4))
+            saida_bruta = resultado.stdout.strip()
+            formato_esperado = padrao_saida.match(saida_bruta)
 
-        if checksum_esperado is None:
-            checksum_esperado = checksum
+            if (formato_esperado is None):
+                raise RuntimeError(
+                    f"Formato de saída inesperado: {saida_bruta}")
 
-        elif checksum != checksum_esperado:
-            raise RuntimeError(
-                f"Checksum divergente em N={n}, passes={PASSES}, ",
-                f"repetição={i}: esperado {checksum_esperado}")
+            n_obtido = int(formato_esperado.group(1))
+            passes_obtidos = int(formato_esperado.group(2))
+            checksum = formato_esperado.group(3)
+            tempo_s = float(formato_esperado.group(4))
+
+            if checksum_esperado is None:
+                checksum_esperado = checksum
+
+            elif checksum != checksum_esperado:
+                raise RuntimeError(
+                    f"Checksum divergente em N={n}, passes={PASSES}, ",
+                    f"repetição={i}: esperado {checksum_esperado}")
+
+            csv_writer.writerow({
+                "implementacao": "baseline",
+                "n": n,
+                "passes": PASSES,
+                "repeticao": i,
+                "checksum": checksum,
+                "tempo_s": tempo_s
+            })
 
 print("Perfilamento finalizado")
