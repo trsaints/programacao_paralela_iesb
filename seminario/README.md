@@ -17,11 +17,11 @@ baseline.
 | Makefile unificado | disponível |
 | Script de medição e CSV | disponível |
 | OpenMP | estrutura preparada; fonte não implementada |
-| MPI | estrutura preparada; fonte não implementada |
+| MPI | faixas horizontais, halos, coletivas e validação integral disponíveis; veja [mpi/README.md](mpi/README.md) |
 | Gráficos finais | aguardam dados paralelos válidos |
 | `AUTORES.md` | disponível, mas deve ser preenchido pelo trio |
 
-Os `SKIPPED` exibidos para OpenMP e MPI são intencionais durante o
+Os `SKIPPED` exibidos para fontes ou ferramentas ausentes são intencionais durante o
 desenvolvimento. Eles **não** indicam que a entrega final está completa: antes
 da entrega, as três fontes devem existir e `make check-final` deve terminar sem
 erros.
