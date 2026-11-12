@@ -7,7 +7,9 @@
     "vscode": {
       "extensions": [
         "ms-vscode.cpptools",
-        "ms-vscode.cpptools-extension-pack"
+        "ms-vscode.cpptools-extension-pack",
+        "mechatroner.rainbow-csv",
+        "ms-python.python"
       ]
     }
   },
