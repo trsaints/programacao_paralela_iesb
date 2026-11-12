@@ -4,8 +4,9 @@
 >
 > Esta versão substitui `relatorio_teorico.v1.md` como referência para os
 > resultados atuais do grupo. Os dados experimentais foram gerados por
-> `script_medicao.py` e estão preservados em `dados/baseline_medicoes.csv` e
-> `dados/baseline_resumo.csv`.
+> `script_medicao.py` e estão preservados em
+> `baseline/dados/baseline_medicoes.csv` e
+> `baseline/dados/baseline_resumo.csv`.
 
 **Identificação do trio:** Thiago Rodrigues Santos, Andre Carvalho, Felipe Oliveira
 **Problema escolhido:** Problema 4 — Filtro de convolução 2D (blur)
@@ -96,14 +97,15 @@ maior que os percursos lineares de inicialização e checksum para `P = 30`.
 
 | N | Passes | Repetições | Checksum | Média (s) | Mediana (s) | Desvio-padrão (s) |
 | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| 1024 | 30 | 10 | 132592104.90 | 0.143133 | 0.142342 | 0.002907 |
-| 2048 | 30 | 10 | 532566143.87 | 0.578690 | 0.573193 | 0.012485 |
-| 4096 | 30 | 10 | 2134674862.94 | 2.631776 | 2.636304 | 0.108373 |
+| 1024 | 30 | 10 | 132592104.90 | 0.144690 | 0.142316 | 0.006689 |
+| 2048 | 30 | 10 | 532566143.87 | 0.619539 | 0.613662 | 0.046888 |
+| 4096 | 30 | 10 | 2134674862.94 | 2.694926 | 2.688303 | 0.144274 |
 
 Os 30 tempos brutos e os resumos estatísticos estão, respectivamente, em
-`dados/baseline_medicoes.csv` e `dados/baseline_resumo.csv`. Para uma futura
-curva de speedup, a mediana será usada como tempo de referência `T1`, pois é
-menos sensível a variações ocasionais do sistema operacional.
+`baseline/dados/baseline_medicoes.csv` e
+`baseline/dados/baseline_resumo.csv`. Para uma futura curva de speedup, a
+mediana será usada como tempo de referência `T1`, pois é menos sensível a
+variações ocasionais do sistema operacional.
 
 ## 4. Estimativa Teórica de Aceleração pela Lei de Amdahl
 

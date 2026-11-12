@@ -31,10 +31,19 @@ no formato:
 N=... passes=... checksum=... tempo=... s
 ```
 
-Os resultados da campanha são gravados em `dados/medicoes.csv`,
-`dados/resumo.csv`, `dados/metricas.csv` e `dados/execucoes_ignoradas.csv`.
-Os arquivos `baseline_medicoes.csv` e `baseline_resumo.csv` continuam sendo
-gerados para manter compatibilidade com o relatório técnico.
+Cada implementação grava seus dados brutos e seu resumo na própria pasta:
+
+```text
+baseline/dados/baseline_medicoes.csv
+baseline/dados/baseline_resumo.csv
+openmp/dados/openmp_medicoes.csv
+openmp/dados/openmp_resumo.csv
+mpi/dados/mpi_medicoes.csv
+mpi/dados/mpi_resumo.csv
+```
+
+As métricas que comparam implementações e o registro de versões ignoradas ficam
+em `dados/metricas.csv` e `dados/execucoes_ignoradas.csv`.
 
 ## Ambiente experimental
 
