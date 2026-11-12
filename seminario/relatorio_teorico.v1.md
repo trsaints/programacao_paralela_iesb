@@ -14,6 +14,9 @@
 > grupo, está em
 > [`relatorio_teorico.v2.md`](relatorio_teorico.v2.md).
 
+**Identificação do trio:** Charles Oliveira, Thiago Rodrigues, Andre Carvalho
+**Problema escolhido:** Problema 4 — Filtro de convolução 2D (blur)
+
 ## **1\. Descrição do Problema e Análise Algorítmica Sequencial**
 
 O problema consiste na aplicação iterativa de um filtro de convolução bidimensional do tipo média (blur) com kernel 3x3 sobre uma imagem sintética de dimensões N x N pixels ao longo de P passes temporais. O algoritmo original de referência foi fornecido em C++ (04\_convolucao.cpp) e serve como padrão absoluto de corretude (gabarito) para validação via checksum das futuras versões paralelas.
