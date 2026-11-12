@@ -1,6 +1,8 @@
 # Programação Paralela - IESB 2026/2
 
-## Atividade 09: Desafio
+Repositório para entregas da disciplina de Programação Paralela, turma 2026/2 (noturno).
+
+# Atividade 09: Desafio
 
 O projeto encontra-se no diretório `desafios/coeficiente_variacao/`. 
 Para executá-lo, há duas opções:
@@ -12,7 +14,7 @@ Para executá-lo, há duas opções:
 > [!NOTE]
 > As instruções de compilação assumem que seu diretório atual (cwd) é a raíz do repositório.
 
-## Projeto de Seminário
+# Projeto de Seminário
 
 O projeto encontra-se no diretório `seminario/`.
 Para executá-lo, realize as seguintes etapas em seu terminal:
@@ -20,3 +22,15 @@ Para executá-lo, realize as seguintes etapas em seu terminal:
 cd seminario
 python3 script_medicao.py
 ```
+
+## Ambiente experimental
+
+- Máquina: notebook pessoal / laboratório IESB
+- CPU: AMD Ryzen 7 5700U with Radeon Graphics
+- Núcleos físicos: 8
+- Threads lógicas: 16
+- Memória RAM: 17GB
+- Sistema operacional: Fedora Linux 44 (Workstation Edition)
+- Compilador: g++ (GCC) 16.2.1 20261029 (Red Hat 16.2.1-3)
+- Flags de compilação: `-O2`
+- Python: 3.14.7
