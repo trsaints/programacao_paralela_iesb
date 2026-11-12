@@ -96,9 +96,9 @@ maior que os percursos lineares de inicialização e checksum para `P = 30`.
 
 | N | Passes | Repetições | Checksum | Média (s) | Mediana (s) | Desvio-padrão (s) |
 | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| 1024 | 30 | 10 | 132592104.90 | 0.145886 | 0.144289 | 0.004296 |
-| 2048 | 30 | 10 | 532566143.87 | 0.573213 | 0.567839 | 0.010234 |
-| 4096 | 30 | 10 | 2134674862.94 | 2.621704 | 2.637227 | 0.093555 |
+| 1024 | 30 | 10 | 132592104.90 | 0.143133 | 0.142342 | 0.002907 |
+| 2048 | 30 | 10 | 532566143.87 | 0.578690 | 0.573193 | 0.012485 |
+| 4096 | 30 | 10 | 2134674862.94 | 2.631776 | 2.636304 | 0.108373 |
 
 Os 30 tempos brutos e os resumos estatísticos estão, respectivamente, em
 `dados/baseline_medicoes.csv` e `dados/baseline_resumo.csv`. Para uma futura
