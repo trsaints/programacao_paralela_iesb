@@ -1,0 +1,15 @@
+{
+  "name": "Programacao Paralela CCO085",
+  "dockerComposeFile": "../seminario/docker-compose.yml",
+  "service": "pp-lab",
+  "workspaceFolder": "/workspace",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.cpptools",
+        "ms-vscode.cpptools-extension-pack"
+      ]
+    }
+  },
+  "remoteUser": "root"
+}
