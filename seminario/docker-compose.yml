@@ -1,0 +1,10 @@
+services:
+  pp-lab:
+    build: .
+    image: iesb/pp-convolucao2d:2026.2
+    working_dir: /lab
+    volumes:
+      - .:/lab
+      - ..:/workspace
+    stdin_open: true
+    tty: true

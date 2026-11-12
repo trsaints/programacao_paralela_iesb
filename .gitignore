@@ -51,6 +51,9 @@ Makefile
 install_manifest.txt
 compile_commands.json
 
+# O Makefile do projeto acadêmico é parte da entrega.
+!seminario/Makefile
+
 # Temporary files
 *.tmp
 *.log
@@ -66,3 +69,7 @@ vcpkg_installed/
 # test output & cache
 Testing/
 .cache/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
