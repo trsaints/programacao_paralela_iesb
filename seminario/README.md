@@ -70,20 +70,28 @@ threads/processos que podem ser medidos; confira-o com `nproc`.
 
 ## Compilação
 
+No Dev Container, o terminal começa em `/workspace`. Entre no projeto e compile
+o baseline com:
+
 ```sh
 cd seminario
-make                 # compila todas as versões que já tenham fonte
-make baseline        # compila somente o sequencial
-make openmp          # compila OpenMP quando a fonte existir
-make mpi             # compila MPI quando a fonte existir
-make clean           # remove somente os executáveis gerados
-make check-final     # exige e compila as três versões
+make baseline
 ```
 
-Enquanto `openmp/04_convolucao_openmp.cpp` ou
-`mpi/04_convolucao_mpi.cpp` não existirem, `make openmp`, `make mpi` e `make`
-registrarão `SKIPPED` e continuarão. Já `make check-final` falha de propósito;
-use-o na revisão pré-entrega.
+Também é seguro executar `make`: ele compila o baseline e mostra `SKIPPED` para
+OpenMP e MPI enquanto as fontes ainda não existirem. Esses `SKIPPED` são o
+comportamento esperado no estado atual.
+
+| Comando | Quando usar |
+| --- | --- |
+| `make baseline` | compilar somente o sequencial |
+| `make` | compilar todas as versões que já tenham fonte |
+| `make openmp` / `make mpi` | depois que a respectiva fonte existir |
+| `make clean` | somente quando quiser remover os executáveis gerados |
+| `make check-final` | **somente antes da entrega**, quando as três fontes existirem |
+
+`make check-final` falha de propósito no estado atual, pois exige
+`openmp/04_convolucao_openmp.cpp` e `mpi/04_convolucao_mpi.cpp`.
 
 O Makefile é a interface unificada para a compilação manual. O
 `script_medicao.py` preserva sua automação própria e invoca diretamente `g++`
