@@ -51,6 +51,9 @@ Makefile
 install_manifest.txt
 compile_commands.json
 
+# O Makefile do projeto acadêmico é parte da entrega.
+!seminario/Makefile
+
 # Temporary files
 *.tmp
 *.log
