@@ -15,6 +15,7 @@ import re
 import shutil
 import statistics
 import subprocess
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -26,6 +27,30 @@ TAMANHOS_MATRIZ = (1024, 2048, 4096)
 PASSES = 30
 AQUECIMENTOS = 1
 REPETICOES = 10
+
+
+def unidades_disponiveis(implementacao: Implementacao, testar_slots: bool = False) -> tuple[int, ...]:
+    """Limita a campanha às CPUs permitidas ao processo/contêiner."""
+    cpus = len(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else (os.cpu_count() or 1)
+    candidatas = tuple(u for u in implementacao.unidades if u <= cpus)
+    if not testar_slots or not implementacao.usa_mpi:
+        return candidatas
+    disponiveis = []
+    for unidades in candidatas:
+        # Testa a política real do lançador, sem forçar oversubscription.
+        resultado = subprocess.run(
+            ["mpirun", "-np", str(unidades), sys.executable, "-c", "pass"],
+            capture_output=True, text=True, check=False,
+        )
+        if resultado.returncode == 0:
+            disponiveis.append(unidades)
+        elif "not enough slots" in (resultado.stderr + resultado.stdout).lower():
+            print(f"mpi: processos={unidades} SKIPPED — slots MPI insuficientes", flush=True)
+        else:
+            raise RuntimeError(f"Falha ao verificar slots MPI: {resultado.stderr or resultado.stdout}")
+    if not disponiveis:
+        raise RuntimeError("Nenhuma configuração MPI possui slots disponíveis")
+    return tuple(disponiveis)
 
 PADRAO_SAIDA = re.compile(
     r"N=(?P<n>\d+)\s+passes=(?P<passes>\d+)\s+"
@@ -146,7 +171,8 @@ COLUNAS_IGNORADAS = (
 
 def resumir_erro(texto: str) -> str:
     """Normaliza mensagens para uma célula CSV e para o terminal."""
-    linhas = [linha.strip() for linha in texto.splitlines() if linha.strip()]
+    linhas = [linha.strip() for linha in texto.splitlines()
+              if linha.strip() and set(linha.strip()) != {"-"}]
     return linhas[0] if linhas else "sem detalhes fornecidos"
 
 
@@ -208,6 +234,8 @@ def comando_execucao(
             ambiente["OMP_SCHEDULE"] = implementacao.escalonamento
 
     comando.extend((str(implementacao.executavel), str(tamanho), str(PASSES)))
+    if implementacao.usa_mpi:
+        comando.append("--validate")
     return comando, ambiente
 
 
@@ -247,6 +275,7 @@ def executar_uma_vez(
     implementacao: Implementacao,
     tamanho: int,
     unidades: int,
+    detalhes: dict | None = None,
 ) -> tuple[str, float]:
     """Executa uma configuração e devolve checksum e tempo medido."""
     comando, ambiente = comando_execucao(implementacao, tamanho, unidades)
@@ -260,13 +289,22 @@ def executar_uma_vez(
     )
 
     if resultado.returncode != 0:
-        detalhe = resumir_erro(resultado.stderr or resultado.stdout)
+        detalhe = (resultado.stderr or resultado.stdout).strip()
         raise RuntimeError(
             f"{implementacao.nome}: execução falhou (código {resultado.returncode}): "
             f"{detalhe}"
         )
 
-    return interpretar_saida(resultado.stdout, implementacao, tamanho)
+    medicao = interpretar_saida(resultado.stdout, implementacao, tamanho)
+    if implementacao.usa_mpi:
+        if "validacao=OK" not in resultado.stderr.splitlines():
+            raise RuntimeError("MPI não confirmou a validação integral")
+        tempos = re.search(r"comunicacao_s=([\d.]+) computacao_s=([\d.]+)", resultado.stderr)
+        if tempos is None:
+            raise RuntimeError("Tempos de comunicação/computação MPI ausentes")
+        if detalhes is not None:
+            detalhes.update(comunicacao_s=float(tempos[1]), computacao_s=float(tempos[2]))
+    return medicao
 
 
 def medir_implementacao(
@@ -275,15 +313,16 @@ def medir_implementacao(
     writer_medicoes: csv.DictWriter,
     writer_resumo: csv.DictWriter,
     writer_metricas: csv.DictWriter,
+    writer_overhead: csv.DictWriter | None = None,
 ) -> None:
     """Executa aquecimento, repetições, validação e estatísticas de uma versão."""
-    for unidades in implementacao.unidades:
+    for unidades in unidades_disponiveis(implementacao, testar_slots=True):
         for tamanho in TAMANHOS_MATRIZ:
             descricao = (
                 f"{implementacao.nome}: N={tamanho}, passes={PASSES}, "
                 f"{implementacao.tipo_unidade}={unidades}"
             )
-            print(f"Medindo {descricao}")
+            print(f"Medindo {descricao}", flush=True)
 
             for _ in range(AQUECIMENTOS):
                 executar_uma_vez(implementacao, tamanho, unidades)
@@ -292,8 +331,9 @@ def medir_implementacao(
             tempos: list[float] = []
 
             for repeticao in range(1, REPETICOES + 1):
+                detalhes: dict = {}
                 checksum, tempo_s = executar_uma_vez(
-                    implementacao, tamanho, unidades
+                    implementacao, tamanho, unidades, detalhes
                 )
 
                 if checksum_esperado is None:
@@ -321,6 +361,8 @@ def medir_implementacao(
                     "tempo_s": tempo_s,
                 }
                 writer_medicoes.writerow(linha_medicao)
+                if implementacao.usa_mpi and writer_overhead is not None:
+                    writer_overhead.writerow({**linha_medicao, **detalhes})
 
             assert checksum_esperado is not None
             tempo_medio = statistics.mean(tempos)
@@ -382,6 +424,7 @@ tempos_referencia: dict[tuple[int, int], float] = {}
 def mostrar_plano() -> None:
     """Mostra fontes esperadas e skips possíveis sem compilar ou medir."""
     for implementacao in IMPLEMENTACOES:
+        print(f"{implementacao.nome}: unidades disponíveis={unidades_disponiveis(implementacao)}")
         motivo = motivo_indisponibilidade(implementacao)
         if motivo is None:
             print(
@@ -393,16 +436,41 @@ def mostrar_plano() -> None:
             print(f"{implementacao.nome}: {estado} — {motivo}")
 
 
+def validar_arquivos_campanha(raiz: Path) -> None:
+    """Confere a persistência das amostras antes de liberar os gráficos."""
+    def ler(caminho):
+        with caminho.open(newline="", encoding="utf-8") as arquivo:
+            return list(csv.DictReader(arquivo))
+
+    for nome in {l["implementacao"] for l in ler(raiz / "dados/metricas.csv")}:
+        medicoes = ler(raiz / nome / "dados" / f"{nome}_medicoes.csv")
+        resumos = ler(raiz / nome / "dados" / f"{nome}_resumo.csv")
+        for resumo in resumos:
+            amostras = [l for l in medicoes if all(l[c] == resumo[c] for c in
+                        ("implementacao", "n", "passes", "unidades", "escalonamento", "checksum"))]
+            esperadas = int(resumo["repeticoes"])
+            if len(amostras) != esperadas or {int(l["repeticao"]) for l in amostras} != set(range(1, esperadas + 1)):
+                raise RuntimeError(f"CSV incompleto: {nome}, N={resumo['n']}, unidades={resumo['unidades']}")
+        if len(medicoes) != sum(int(l["repeticoes"]) for l in resumos):
+            raise RuntimeError(f"CSV de medições/resumo inconsistente: {nome}")
+
+
 def executar_campanha() -> None:
     """Compila e mede todas as implementações disponíveis."""
     if REPETICOES < 2:
         raise ValueError("REPETICOES deve ser pelo menos 2 para calcular desvio-padrão")
 
     DIRETORIO_DADOS_COMPARTILHADOS.mkdir(parents=True, exist_ok=True)
+    marcador = DIRETORIO_DADOS_COMPARTILHADOS / ".campanha_em_andamento"
+    marcador.write_text("Campanha incompleta; execute script_medicao.py novamente.\n", encoding="utf-8")
+    (RAIZ_PROJETO / "mpi" / "dados").mkdir(parents=True, exist_ok=True)
     tempos_referencia.clear()
     referencias_baseline: dict[tuple[int, int], str] = {}
 
     with (
+        (RAIZ_PROJETO / "mpi/dados/mpi_overhead.csv").open(
+            "w", newline="", encoding="utf-8"
+        ) as arquivo_overhead,
         (DIRETORIO_DADOS_COMPARTILHADOS / "metricas.csv").open(
             "w", newline="", encoding="utf-8"
         ) as arquivo_metricas,
@@ -413,6 +481,12 @@ def executar_campanha() -> None:
         writer_metricas = csv.DictWriter(
             arquivo_metricas, fieldnames=COLUNAS_METRICAS, lineterminator="\n"
         )
+        writer_overhead = csv.DictWriter(
+            arquivo_overhead,
+            fieldnames=(*COLUNAS_MEDICOES, "comunicacao_s", "computacao_s"),
+            lineterminator="\n",
+        )
+        writer_overhead.writeheader()
         writer_ignoradas = csv.DictWriter(
             arquivo_ignoradas, fieldnames=COLUNAS_IGNORADAS, lineterminator="\n"
         )
@@ -465,8 +539,11 @@ def executar_campanha() -> None:
                     writer_medicoes=writer_medicoes,
                     writer_resumo=writer_resumo,
                     writer_metricas=writer_metricas,
+                    writer_overhead=writer_overhead,
                 )
 
+    validar_arquivos_campanha(RAIZ_PROJETO)
+    marcador.unlink()
     print("\nPerfilamento finalizado.")
     print(f"Métricas comparativas: {DIRETORIO_DADOS_COMPARTILHADOS / 'metricas.csv'}")
     print(

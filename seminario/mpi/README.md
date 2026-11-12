@@ -25,7 +25,7 @@ bytes dos pixels da imagem reconstruída; divergência retorna código 2.
 A validação fica fora do intervalo cronometrado. Sem essa opção, o script
 geral continua funcionando com sua comparação de checksum.
 
-## Validação e campanha de overhead
+## Validação, campanha padronizada e gráficos
 
 No ambiente Linux/contêiner do projeto, com OpenMPI, make, g++ e Python 3:
 
@@ -33,22 +33,41 @@ No ambiente Linux/contêiner do projeto, com OpenMPI, make, g++ e Python 3:
 # Casos pequenos: bordas, paridade, faixas desiguais e ranks vazios
 python3 mpi/script_analise.py --test --processos 1 2 4
 
-# Campanha completa: 1 aquecimento, 10 repetições, 30 passes
-python3 mpi/script_analise.py
+# Campanha oficial do seminário: baseline e versões disponíveis
+python3 script_medicao.py
 
-# Campanha curta
-python3 mpi/script_analise.py --tamanhos 32 65 --passes 3 --processos 1 2 4 --repeticoes 2
+# Gerar gráficos a partir dos CSVs dessa campanha, sem medir novamente
+python3 mpi/script_analise.py
 
 # Verificações Python sem MPI
 python3 -m unittest discover -s mpi -p 'test_*.py'
 ```
 
-A campanha compila os programas, valida todos os pixels em cada execução MPI
-e compara o checksum com o executável baseline original. Gera
-mpi/dados/analise_medicoes.csv (amostras MPI e baseline),
-mpi/dados/analise_resumo.csv (medianas), e quatro gráficos SVG em
-mpi/graficos/: speedup, eficiência, comunicação e computação. Usa apenas
-a biblioteca padrão Python. Preserva os dados da campanha geral.
+`script_medicao.py` é a única campanha de medição. Segue os tamanhos,
+repetições e colunas definidos no README do seminário e limita as unidades
+às CPUs disponíveis. Antes de medir, verifica também os slots reais do OpenMPI;
+configurações sem slots suficientes são informadas como `SKIPPED`, sem
+ativar oversubscription. A contagem de CPUs lógicas pode ser maior que a
+quantidade de slots, pois o OpenMPI usa núcleos físicos por padrão.
+Valida todos os pixels em cada execução MPI (fora do
+tempo medido) e compara o checksum com o executável baseline original.
+Gera `mpi/dados/mpi_medicoes.csv`, `mpi/dados/mpi_resumo.csv` e as métricas
+compartilhadas em `dados/metricas.csv`, além dos CSVs do baseline e OpenMP
+quando disponível. A campanha sobrescreve os dados anteriores desses arquivos.
+
+Os tempos de comunicação e computação são um complemento em
+`mpi/dados/mpi_overhead.csv`, com as mesmas chaves de configuração e repetição
+das medições MPI; as colunas dos arquivos padronizados permanecem intactas.
+O gerador lê `dados/metricas.csv` para speedup/eficiência e `mpi_overhead.csv`
+para as componentes. Salva quatro SVGs em `mpi/graficos/` sem dependências
+externas. Ele não executa uma segunda campanha.
+
+Os arquivos antigos `analise_*.csv` são históricos da campanha anterior,
+não são mais produzidos nem consumidos. Gere novamente a campanha padrão
+antes de atualizar os gráficos; não combine baselines de campanhas diferentes.
+Se a campanha falhar, o gerador bloqueia a atualização dos gráficos até uma
+nova execução terminar com sucesso. Para encadear os comandos, use
+`python3 script_medicao.py && python3 mpi/script_analise.py`.
 
 Speedup = mediana do tempo baseline / mediana do tempo MPI;
 eficiência = speedup / número de processos. O tempo MPI inclui distribuição,
