@@ -75,7 +75,7 @@ with open(
     for n in TAMANHOS_MATRIZ:
         print(f"Executando perfilamento para N={n}")
 
-        # Loop de Aquecimento: valores descartados
+# Loop de Aquecimento: valores descartados
         for _ in range(AQUECIMENTOS):
             resultado = executar_baseline(n)
 
@@ -84,7 +84,7 @@ with open(
         checksum_esperado = None
         tempos_n: list[float] = []
 
-        # Loop de Execução final: valores capturados
+# Loop de Execução final: valores capturados
         for i in range(1, REPETICOES + 1):
             resultado = executar_baseline(n)
 
@@ -113,7 +113,7 @@ with open(
             elif checksum_obtido != checksum_esperado:
                 raise RuntimeError(
                     f"Checksum divergente em N={n}, passes={PASSES}, "
-                    f"repetição={i}: esperado {checksum_esperado}")
+                    f"repetição={i}: esperado {checksum_esperado}, obtido {checksum_obtido}")
 
             medicoes_writer.writerow({
                 "implementacao": "baseline",
@@ -124,7 +124,7 @@ with open(
                 "tempo_s": tempo_s
             })
 
-        # Estatísticas das iterações de N
+# Estatísticas das iterações de N
         estatisticas_writer.writerow({
             "implementacao": "baseline",
             "n": n,
