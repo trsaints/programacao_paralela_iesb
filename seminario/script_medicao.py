@@ -8,14 +8,23 @@ REPETICOES = 10
 
 
 def executar_baseline(n: int):
+    """
+    Executa o programa do algoritmo de baseline sequencial.
+
+    Args:
+        n (int): Tamanho da matriz a ser processada.
+
+    Returns:
+        s: Uma instância `CompletedProcess[str]`, contendo a saída do algoritmo.
+    """
     if n not in TAMANHOS_MATRIZ:
         raise ValueError(
             f"Valor {n} não está presente na faixa de tamanhos {TAMANHOS_MATRIZ}")
 
-    subprocess.run(["./baseline/convolucao.out", str(n), str(PASSES)],
-                   capture_output=True,
-                   text=True,
-                   check=True)
+    return subprocess.run(["./baseline/convolucao.out", str(n), str(PASSES)],
+                          capture_output=True,
+                          text=True,
+                          check=True)
 
 
 # Compilar
@@ -28,12 +37,14 @@ padrao_saida = re.compile(
     r"N=(\d+)\s+passes=(\d+)\s+checksum=([0-9.+-]+)\s+tempo=([0-9.+-]+)\s+s")
 
 for n in TAMANHOS_MATRIZ:
-    for i in range(1, 11):
-        # Executar o programa
+    # Loop de Aquecimento
+    for _ in range(AQUECIMENTOS):
         resultado = executar_baseline(n)
 
-        if i == 1:
-            continue  # impede o warm-up de ser impresso no stdout e ser incluso no csv de profile
+    # Execução final
+    for i in range(1, REPETICOES + 1):
+        # Executar o programa
+        resultado = executar_baseline(n)
 
         saida_bruta = resultado.stdout.strip()
         formato_esperado = padrao_saida.match(saida_bruta)
