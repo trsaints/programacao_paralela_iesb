@@ -1,5 +1,6 @@
 import csv
 import re
+import statistics
 import subprocess
 
 TAMANHOS_MATRIZ = [1024, 2048, 4096]
@@ -38,8 +39,12 @@ subprocess.run(
 padrao_saida = re.compile(
     r"N=(\d+)\s+passes=(\d+)\s+checksum=([0-9.+-]+)\s+tempo=([0-9.+-]+)\s+s")
 
-with open("dados/baseline_medicoes.csv", "w", newline="", encoding="utf-8") as arquivo_medicoes:
-    COLUNAS_CSV = [
+with open(
+    "dados/baseline_medicoes.csv", mode="w", newline="", encoding="utf-8",
+) as arquivo_medicoes, open(
+    "dados/baseline_resumo.csv", mode="w", newline="", encoding="utf-8",
+) as arquivo_estatisticas:
+    colunas_medicoes = [
         "implementacao",
         "n",
         "passes",
@@ -48,10 +53,28 @@ with open("dados/baseline_medicoes.csv", "w", newline="", encoding="utf-8") as a
         "tempo_s",
     ]
 
-    csv_writer = csv.DictWriter(arquivo_medicoes, fieldnames=COLUNAS_CSV)
-    csv_writer.writeheader()
+    colunas_estatisticas = [
+        "implementacao",
+        "n",
+        "passes",
+        "repeticoes",
+        "checksum",
+        "tempo_medio_s",
+        "tempo_mediano_s",
+        "desvio_padrao_s",
+    ]
+
+    medicoes_writer = csv.DictWriter(
+        arquivo_medicoes, fieldnames=colunas_medicoes)
+    medicoes_writer.writeheader()
+
+    estatisticas_writer = csv.DictWriter(
+        arquivo_estatisticas, fieldnames=colunas_estatisticas)
+    estatisticas_writer.writeheader()
 
     for n in TAMANHOS_MATRIZ:
+        print(f"Executando perfilamento para N={n}")
+
         # Loop de Aquecimento: valores descartados
         for _ in range(AQUECIMENTOS):
             resultado = executar_baseline(n)
@@ -59,6 +82,7 @@ with open("dados/baseline_medicoes.csv", "w", newline="", encoding="utf-8") as a
         # Para este N e este número de passes, a primeira medição define o checksum
         # esperado; todas as demais repetições devem retornar o mesmo valor.
         checksum_esperado = None
+        tempos_n: list[float] = []
 
         # Loop de Execução final: valores capturados
         for i in range(1, REPETICOES + 1):
@@ -73,24 +97,44 @@ with open("dados/baseline_medicoes.csv", "w", newline="", encoding="utf-8") as a
 
             n_obtido = int(formato_esperado.group(1))
             passes_obtidos = int(formato_esperado.group(2))
-            checksum = formato_esperado.group(3)
+
+            if n_obtido != n or passes_obtidos != PASSES:
+                raise RuntimeError(
+                    f"Parâmetros retornados inesperados: N={n_obtido}, passes={passes_obtidos}")
+
+            checksum_obtido = formato_esperado.group(3)
+
             tempo_s = float(formato_esperado.group(4))
+            tempos_n.append(tempo_s)
 
             if checksum_esperado is None:
-                checksum_esperado = checksum
+                checksum_esperado = checksum_obtido
 
-            elif checksum != checksum_esperado:
+            elif checksum_obtido != checksum_esperado:
                 raise RuntimeError(
-                    f"Checksum divergente em N={n}, passes={PASSES}, ",
+                    f"Checksum divergente em N={n}, passes={PASSES}, "
                     f"repetição={i}: esperado {checksum_esperado}")
 
-            csv_writer.writerow({
+            medicoes_writer.writerow({
                 "implementacao": "baseline",
                 "n": n,
                 "passes": PASSES,
                 "repeticao": i,
-                "checksum": checksum,
+                "checksum": checksum_obtido,
                 "tempo_s": tempo_s
             })
 
-print("Perfilamento finalizado")
+        # Estatísticas das iterações de N
+        estatisticas_writer.writerow({
+            "implementacao": "baseline",
+            "n": n,
+            "passes": PASSES,
+            "repeticoes": REPETICOES,
+            "checksum": checksum_esperado,
+            "tempo_medio_s": statistics.mean(tempos_n),
+            "tempo_mediano_s": statistics.median(tempos_n),
+            "desvio_padrao_s": statistics.stdev(tempos_n)
+        })
+
+print("Perfilamento finalizado e disponível em 'dados/baseline_medicoes.csv'.\n"
+      "Estatísticas disponíveis em 'dados/baseline_resumo.csv'.")
