@@ -53,6 +53,7 @@ programacao_paralela_iesb/
     ├── README.md
     ├── Dockerfile
     ├── docker-compose.yml
+    ├── HARDWARE.md
     ├── script_medicao.py
     ├── baseline/
     ├── openmp/

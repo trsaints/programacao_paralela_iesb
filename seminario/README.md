@@ -9,15 +9,15 @@ em `baseline/04_convolucao.cpp`. As versões OpenMP e MPI deverão produzir o
 mesmo checksum para a mesma entrada, sem alterar a lógica nem a entrada do
 baseline.
 
-## Situação atual
+## Situação
 
-| Item exigido | Situação atual |
+| Item exigido | Situação |
 | --- | --- |
 | Baseline sequencial | disponível em `baseline/` |
 | Makefile unificado | disponível |
 | Script de medição e CSV | disponível |
-| OpenMP | estrutura preparada; fonte ainda não implementada |
-| MPI | estrutura preparada; fonte ainda não implementada |
+| OpenMP | estrutura preparada; fonte não implementada |
+| MPI | estrutura preparada; fonte não implementada |
 | Gráficos finais | aguardam dados paralelos válidos |
 | `AUTORES.md` | disponível, mas deve ser preenchido pelo trio |
 
@@ -33,9 +33,11 @@ OpenMP, OpenMPI, `make` e Python 3. As medições que serão apresentadas no
 relatório e nos gráficos finais devem ser feitas no laboratório ou no contêiner
 Docker equivalente da disciplina.
 
-Os CSVs atualmente versionados foram obtidos no notebook pessoal durante o
-desenvolvimento. Eles são úteis como histórico e teste inicial, mas não devem
-ser usados como números finais sem uma nova campanha no ambiente oficial.
+Os CSVs versionados podem ser gerados no Dev Container durante o
+desenvolvimento, em um notebook pessoal. Eles são úteis como histórico e teste
+inicial, mas não devem ser usados como números finais sem uma nova campanha no
+laboratório, cujo hardware é a referência da disciplina. As configurações de
+desenvolvimento estão documentadas em [`HARDWARE.md`](HARDWARE.md).
 
 ### Usar Docker
 
@@ -79,8 +81,8 @@ make baseline
 ```
 
 Também é seguro executar `make`: ele compila o baseline e mostra `SKIPPED` para
-OpenMP e MPI enquanto as fontes ainda não existirem. Esses `SKIPPED` são o
-comportamento esperado no estado atual.
+OpenMP e MPI enquanto as fontes não existirem. Esses `SKIPPED` são o
+comportamento esperado nessa condição.
 
 | Comando | Quando usar |
 | --- | --- |
@@ -90,7 +92,7 @@ comportamento esperado no estado atual.
 | `make clean` | somente quando quiser remover os executáveis gerados |
 | `make check-final` | **somente antes da entrega**, quando as três fontes existirem |
 
-`make check-final` falha de propósito no estado atual, pois exige
+`make check-final` falha de propósito enquanto exigir fontes inexistentes:
 `openmp/04_convolucao_openmp.cpp` e `mpi/04_convolucao_mpi.cpp`.
 
 O Makefile é a interface unificada para a compilação manual. O
@@ -166,7 +168,7 @@ dados/metricas.csv                     # T1, Tp, speedup e eficiência
 dados/execucoes_ignoradas.csv          # versões indisponíveis na campanha
 ```
 
-Atualmente, a matriz automática de unidades mede **escalabilidade forte** para
+A matriz automática de unidades mede **escalabilidade forte** para
 cada tamanho fixo. A entrega final também exige análise de escalabilidade fraca:
 quando OpenMP e MPI forem implementados, planejem e registrem uma campanha em
 que o trabalho por unidade permaneça aproximadamente constante (por exemplo,

@@ -1,13 +1,12 @@
 # Relatório Técnico de Baseline e Plano de Perfilamento
 
-> **Status: dados de desenvolvimento do baseline — não são resultados finais**
+> **Status: dados de desenvolvimento do baseline**
 >
-> Esta versão substitui `relatorio_teorico.v1.md` como referência para a análise
-> atual do grupo. Os dados experimentais de desenvolvimento estão preservados em
+> Os dados experimentais estão preservados em
 > `baseline/dados/baseline_medicoes.csv` e
 > `baseline/dados/baseline_resumo.csv`. Antes da entrega/apresentação, os
-> resultados reportados devem ser regenerados no ambiente oficial da disciplina
-> (laboratório ou contêiner Docker equivalente).
+> resultados finais devem ser confirmados no laboratório. A configuração de
+> desenvolvimento está registrada em [`HARDWARE.md`](HARDWARE.md).
 
 **Identificação do trio:** Thiago Rodrigues Santos, Andre Carvalho, Felipe Oliveira
 **Problema escolhido:** Problema 4 — Filtro de convolução 2D (blur)
@@ -51,7 +50,7 @@ deve ser preservado pelas versões OpenMP e MPI para manter o mesmo checksum.
 ## 2. Análise Microarquitetural e Intensidade Computacional
 
 Esta seção registra observações verificáveis diretamente no código; não foram
-usados `perf`, PAPI, gprof ou um modelo Roofline nesta medição.
+usados `perf`, PAPI, gprof ou um modelo Roofline.
 
 ### 2.1 Padrões de Acesso à Memória
 
@@ -98,9 +97,9 @@ maior que os percursos lineares de inicialização e checksum para `P = 30`.
 
 | N | Passes | Repetições | Checksum | Média (s) | Mediana (s) | Desvio-padrão (s) |
 | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| 1024 | 30 | 10 | 132592104.90 | 0.144690 | 0.142316 | 0.006689 |
-| 2048 | 30 | 10 | 532566143.87 | 0.619539 | 0.613662 | 0.046888 |
-| 4096 | 30 | 10 | 2134674862.94 | 2.694926 | 2.688303 | 0.144274 |
+| 1024 | 30 | 10 | 132592104.90 | 0.268782 | 0.267874 | 0.002795 |
+| 2048 | 30 | 10 | 532566143.87 | 1.079976 | 1.079629 | 0.005720 |
+| 4096 | 30 | 10 | 2134674862.94 | 4.838058 | 4.801710 | 0.208169 |
 
 Os 30 tempos brutos e os resumos estatísticos estão, respectivamente, em
 `baseline/dados/baseline_medicoes.csv` e
@@ -165,12 +164,12 @@ executa o aquecimento e produz os CSVs. Para cada tamanho, a primeira execução
 | Estatísticas | média, mediana e desvio-padrão |
 | Compilação | `g++ -O2` |
 
-As medições desta versão foram executadas no notebook pessoal de Thiago, com
-AMD Ryzen 7 5700U (8 núcleos físicos e 16 threads lógicas), 17 GB de RAM,
-Fedora Linux 44, GCC 16.2.1 e Python 3.14.7. Elas devem ser tratadas somente
-como dados de desenvolvimento. Antes da apresentação, o protocolo precisa ser
-repetido no laboratório ou no contêiner Docker oficial; os gráficos e tempos
-finais não devem misturar os dois ambientes.
+As medições foram executadas no Dev Container do projeto. O contêiner
+padroniza as ferramentas de compilação, mas os tempos ainda dependem dos
+recursos disponíveis no host. Por isso, estes valores são usados como referência
+de desenvolvimento e devem ser confirmados no laboratório antes da apresentação.
+Os detalhes de hardware desta campanha estão em
+[`HARDWARE.md`](HARDWARE.md).
 
 ## 6. Plano Teórico de Paralelização
 
