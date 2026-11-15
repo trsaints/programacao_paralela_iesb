@@ -180,16 +180,17 @@ como concluída sem os dados brutos e a metodologia correspondente.
 
 Importe os CSVs em LibreOffice Calc, Excel ou Google Sheets com codificação
 UTF-8, separador vírgula e decimal ponto. Para gerar automaticamente os gráficos
-MPI a partir da mesma campanha, execute após `python3 script_medicao.py`:
+gerais e os gráficos de cada implementação, execute após `python3 script_medicao.py`:
 
 ```sh
-python3 mpi/script_analise.py
+python3 script_analise.py
 ```
 
-O gerador usa somente a biblioteca padrão, lê `dados/metricas.csv` e o
-complemento `mpi/dados/mpi_overhead.csv`, e salva SVGs em `mpi/graficos/`.
-Não compila nem mede novamente. A opção `--test --processos 1 2` desse script
-continua disponível para validação funcional dos casos pequenos.
+O gerador usa somente a biblioteca padrão, lê `dados/metricas.csv` e salva
+gráficos comparativos em `graficos/`, o tempo do baseline e gráficos de tempo,
+speedup e eficiência nas pastas de cada implementação. Não compila nem mede
+novamente. Quando há medições MPI, ele também usa `mpi/dados/mpi_overhead.csv`
+para gerar os gráficos de comunicação e computação MPI.
 
 | Gráfico | Dados de origem |
 | --- | --- |
@@ -197,6 +198,7 @@ continua disponível para validação funcional dos casos pequenos.
 | Tempo OpenMP ou MPI | `<implementacao>/dados/<implementacao>_resumo.csv`: `unidades` × `tempo_mediano_s` |
 | Speedup ou eficiência por implementação | `dados/metricas.csv`, filtrado por `implementacao` e `n` |
 | Comparativo OpenMP × MPI | `dados/metricas.csv`, com séries separadas por implementação e `n` |
+| Comunicação ou computação MPI | `mpi/dados/mpi_overhead.csv` |
 
 Versione gráficos específicos em cada implementação:
 

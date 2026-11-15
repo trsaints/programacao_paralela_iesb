@@ -25,22 +25,16 @@ bytes dos pixels da imagem reconstruída; divergência retorna código 2.
 A validação fica fora do intervalo cronometrado. Sem essa opção, o script
 geral continua funcionando com sua comparação de checksum.
 
-## Validação, campanha padronizada e gráficos
+## Campanha padronizada e gráficos
 
 No ambiente Linux/contêiner do projeto, com OpenMPI, make, g++ e Python 3:
 
 ```sh
-# Casos pequenos: bordas, paridade, faixas desiguais e ranks vazios
-python3 mpi/script_analise.py --test --processos 1 2 4
-
 # Campanha oficial do seminário: baseline e versões disponíveis
 python3 script_medicao.py
 
-# Gerar gráficos a partir dos CSVs dessa campanha, sem medir novamente
-python3 mpi/script_analise.py
-
-# Verificações Python sem MPI
-python3 -m unittest discover -s mpi -p 'test_*.py'
+# Gerar todos os gráficos, sem medir novamente
+python3 script_analise.py
 ```
 
 `script_medicao.py` é a única campanha de medição. Segue os tamanhos,
@@ -58,16 +52,15 @@ quando disponível. A campanha sobrescreve os dados anteriores desses arquivos.
 Os tempos de comunicação e computação são um complemento em
 `mpi/dados/mpi_overhead.csv`, com as mesmas chaves de configuração e repetição
 das medições MPI; as colunas dos arquivos padronizados permanecem intactas.
-O gerador lê `dados/metricas.csv` para speedup/eficiência e `mpi_overhead.csv`
-para as componentes. Salva quatro SVGs em `mpi/graficos/` sem dependências
-externas. Ele não executa uma segunda campanha.
-
-Os arquivos antigos `analise_*.csv` são históricos da campanha anterior,
-não são mais produzidos nem consumidos. Gere novamente a campanha padrão
-antes de atualizar os gráficos; não combine baselines de campanhas diferentes.
+O gerador geral lê `dados/metricas.csv` para tempo, speedup e eficiência e
+salva os gráficos comparativos em `graficos/` e os dedicados em cada pasta de
+implementação. Ele também lê `mpi_overhead.csv` para gerar as componentes de
+comunicação e computação em `mpi/graficos/`, sem executar uma segunda campanha.
+Gere novamente a campanha padrão antes de atualizar os gráficos; não combine
+baselines de campanhas diferentes.
 Se a campanha falhar, o gerador bloqueia a atualização dos gráficos até uma
 nova execução terminar com sucesso. Para encadear os comandos, use
-`python3 script_medicao.py && python3 mpi/script_analise.py`.
+`python3 script_medicao.py && python3 script_analise.py`.
 
 Speedup = mediana do tempo baseline / mediana do tempo MPI;
 eficiência = speedup / número de processos. O tempo MPI inclui distribuição,
