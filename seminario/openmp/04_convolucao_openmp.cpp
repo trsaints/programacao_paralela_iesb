@@ -1,4 +1,4 @@
-#include <iostream>
+#include <cstdio>
 #include <vector>
 #include <chrono>
 #include <cstdlib>
@@ -6,11 +6,16 @@
 
 int main(int argc, char **argv)
 {
-    int N = (argc > 1) ? std::atoi(argv[1]) : 1000;
+    int N = (argc > 1) ? std::atoi(argv[1]) : 2000;
     int P = (argc > 2) ? std::atoi(argv[2]) : 30;
 
-    std::vector<float> a(N * N, 1.0f);
-    std::vector<float> b(N * N, 0.0f);
+    std::vector<float> a(N * N);
+    std::vector<float> b(N * N);
+
+    for (int i = 0; i < N * N; i++)
+    {
+        a[i] = static_cast<float>((i * 131) % 256);
+    }
 
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -45,7 +50,7 @@ int main(int argc, char **argv)
         checksum += a[i];
     }
 
-    std::cout << "Tempo OpenMP: " << diff.count() << " s | Checksum: " << checksum << std::endl;
+    std::printf("N=%d passes=%d  checksum=%.2f  tempo=%.6f s\n", N, P, checksum, diff.count());
 
     return 0;
 }
