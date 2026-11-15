@@ -72,4 +72,5 @@ Testing/
 
 # Python bytecode
 __pycache__/
+seminario/dados/.campanha_em_andamento
 *.py[cod]
