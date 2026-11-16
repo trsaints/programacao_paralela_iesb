@@ -134,17 +134,19 @@ Execute a campanha a partir desta pasta:
 python3 script_medicao.py
 ```
 
-O comando compila diretamente cada implementação disponível, descarta uma
-execução de aquecimento e registra dez repetições válidas por configuração. Ele
-sobrescreve os CSVs da campanha anterior; antes de uma campanha oficial,
-confirme que você deseja substituir os dados de desenvolvimento versionados.
+O comando compila diretamente cada implementação disponível e faz três
+execuções por configuração: a primeira é descartada como aquecimento e as duas
+seguintes são registradas como amostras válidas. Ele sobrescreve os CSVs da
+campanha anterior; antes de uma campanha oficial, confirme que você deseja
+substituir os dados de desenvolvimento versionados.
 
 | Parâmetro padrão | Valor |
 | --- | ---: |
 | Tamanhos `N` | 1024, 2048 e 4096 |
 | Passes | 30 |
 | Aquecimento descartado | 1 por configuração |
-| Repetições válidas | 10 por configuração |
+| Repetições válidas | 2 por configuração |
+| Execuções totais | 3 por configuração |
 | Unidades paralelas candidatas | 1, 2, 4 e 8, limitadas por `nproc` |
 | Tempo de referência | mediana do baseline (`T1`) |
 

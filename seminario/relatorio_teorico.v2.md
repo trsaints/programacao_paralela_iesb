@@ -150,16 +150,16 @@ comparadas a essa projeção no Marco 2.
 
 ## 5. Metodologia e Protocolo Experimental de Medição
 
-O script `script_medicao.py` recompila o baseline diretamente com `g++ -O2`,
-executa o aquecimento e produz os CSVs. Para cada tamanho, a primeira execução
-é descartada e são registradas 10 repetições válidas.
+O script `script_medicao.py` recompila o baseline diretamente com `g++ -O2` e
+produz os CSVs. Para cada tamanho, são feitas três execuções: a primeira é
+descartada como aquecimento e as duas seguintes formam as amostras válidas.
 
 | Item | Configuração |
 | --- | --- |
 | Tamanhos de entrada | `N = 1024`, `2048` e `4096` |
 | Passes | `P = 30` |
 | Aquecimento | 1 execução descartada por tamanho |
-| Amostragem | 10 repetições por tamanho |
+| Amostragem | 2 repetições válidas por tamanho (3 execuções totais) |
 | Cronômetro | `clock_gettime(CLOCK_MONOTONIC)` no baseline |
 | Estatísticas | média, mediana e desvio-padrão |
 | Compilação | `g++ -O2` |

@@ -25,8 +25,11 @@ DIRETORIO_DADOS_COMPARTILHADOS = RAIZ_PROJETO / "dados"
 
 TAMANHOS_MATRIZ = (1024, 2048, 4096)
 PASSES = 30
+# Protocolo do material de referência: três execuções por configuração;
+# a primeira é aquecimento e não compõe as estatísticas.
+EXECUCOES_TOTAIS = 3
 AQUECIMENTOS = 1
-REPETICOES = 10
+REPETICOES_VALIDAS = EXECUCOES_TOTAIS - AQUECIMENTOS
 
 
 def unidades_disponiveis(implementacao: Implementacao, testar_slots: bool = False) -> tuple[int, ...]:
@@ -330,7 +333,7 @@ def medir_implementacao(
             checksum_esperado = referencias_baseline.get((tamanho, PASSES))
             tempos: list[float] = []
 
-            for repeticao in range(1, REPETICOES + 1):
+            for repeticao in range(1, REPETICOES_VALIDAS + 1):
                 detalhes: dict = {}
                 checksum, tempo_s = executar_uma_vez(
                     implementacao, tamanho, unidades, detalhes
@@ -375,7 +378,7 @@ def medir_implementacao(
                 "escalonamento": implementacao.escalonamento,
                 "n": tamanho,
                 "passes": PASSES,
-                "repeticoes": REPETICOES,
+                "repeticoes": REPETICOES_VALIDAS,
                 "checksum": checksum_esperado,
                 "tempo_medio_s": tempo_medio,
                 "tempo_mediano_s": tempo_mediano,
@@ -457,8 +460,11 @@ def validar_arquivos_campanha(raiz: Path) -> None:
 
 def executar_campanha() -> None:
     """Compila e mede todas as implementações disponíveis."""
-    if REPETICOES < 2:
-        raise ValueError("REPETICOES deve ser pelo menos 2 para calcular desvio-padrão")
+    if REPETICOES_VALIDAS < 2:
+        raise ValueError(
+            "O protocolo precisa de pelo menos duas repetições válidas "
+            "para calcular desvio-padrão"
+        )
 
     DIRETORIO_DADOS_COMPARTILHADOS.mkdir(parents=True, exist_ok=True)
     marcador = DIRETORIO_DADOS_COMPARTILHADOS / ".campanha_em_andamento"
