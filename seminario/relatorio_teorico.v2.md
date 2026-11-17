@@ -3,8 +3,8 @@
 > **Status: dados de desenvolvimento do baseline**
 >
 > Os dados experimentais estão preservados em
-> `baseline/dados/baseline_medicoes.csv` e
-> `baseline/dados/baseline_resumo.csv`. Antes da entrega/apresentação, os
+> `baseline/dados/forte/baseline_medicoes.csv` e
+> `baseline/dados/forte/baseline_resumo.csv`. Antes da entrega/apresentação, os
 > resultados finais devem ser confirmados no laboratório. A configuração de
 > desenvolvimento está registrada em [`HARDWARE.md`](HARDWARE.md).
 
@@ -102,8 +102,8 @@ maior que os percursos lineares de inicialização e checksum para `P = 30`.
 | 4096 | 30 | 10 | 2134674862.94 | 4.838058 | 4.801710 | 0.208169 |
 
 Os 30 tempos brutos e os resumos estatísticos estão, respectivamente, em
-`baseline/dados/baseline_medicoes.csv` e
-`baseline/dados/baseline_resumo.csv`. Para uma futura curva de speedup, a
+`baseline/dados/forte/baseline_medicoes.csv` e
+`baseline/dados/forte/baseline_resumo.csv`. Para uma futura curva de speedup, a
 mediana será usada como tempo de referência `T1`, pois é menos sensível a
 variações ocasionais do sistema operacional.
 
@@ -150,16 +150,16 @@ comparadas a essa projeção no Marco 2.
 
 ## 5. Metodologia e Protocolo Experimental de Medição
 
-O script `script_medicao.py` recompila o baseline diretamente com `g++ -O2`,
-executa o aquecimento e produz os CSVs. Para cada tamanho, a primeira execução
-é descartada e são registradas 10 repetições válidas.
+O script `script_medicao.py` recompila o baseline diretamente com `g++ -O2` e
+produz os CSVs. Para cada tamanho, são feitas três execuções: a primeira é
+descartada como aquecimento e as duas seguintes formam as amostras válidas.
 
 | Item | Configuração |
 | --- | --- |
 | Tamanhos de entrada | `N = 1024`, `2048` e `4096` |
 | Passes | `P = 30` |
 | Aquecimento | 1 execução descartada por tamanho |
-| Amostragem | 10 repetições por tamanho |
+| Amostragem | 2 repetições válidas por tamanho (3 execuções totais) |
 | Cronômetro | `clock_gettime(CLOCK_MONOTONIC)` no baseline |
 | Estatísticas | média, mediana e desvio-padrão |
 | Compilação | `g++ -O2` |

@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="440" viewBox="0 0 920 440">
+<rect width="920" height="440" fill="white"/>
+<text x="75" y="30" font-family="sans-serif" font-size="20">Tempo mediano — OpenMP × MPI</text>
+<path d="M75 65V370H715" fill="none" stroke="black"/>
+<text x="340" y="425" font-family="sans-serif">Unidades paralelas</text>
+<text x="8" y="55" font-family="sans-serif">Tempo (s)</text>
+<text x="8" y="375.0" font-family="sans-serif">0.00</text>
+<text x="8" y="316.0" font-family="sans-serif">1.04</text>
+<text x="8" y="257.0" font-family="sans-serif">2.08</text>
+<text x="8" y="198.0" font-family="sans-serif">3.13</text>
+<text x="8" y="139.0" font-family="sans-serif">4.17</text>
+<text x="8" y="80.0" font-family="sans-serif">5.21</text>
+<text x="75.0" y="395" font-family="sans-serif">1</text>
+<text x="166.4" y="395" font-family="sans-serif">2</text>
+<text x="349.3" y="395" font-family="sans-serif">4</text>
+<text x="715.0" y="395" font-family="sans-serif">8</text>
+<polyline points="75.00,354.46 166.43,361.98 349.29,365.27 715.00,366.22" fill="none" stroke="#2563eb" stroke-width="2"/>
+<circle cx="75.00" cy="354.46" r="4" fill="#2563eb"/>
+<circle cx="166.43" cy="361.98" r="4" fill="#2563eb"/>
+<circle cx="349.29" cy="365.27" r="4" fill="#2563eb"/>
+<circle cx="715.00" cy="366.22" r="4" fill="#2563eb"/>
+<text x="745" y="95" fill="#2563eb" font-family="sans-serif">MPI — N=1024</text>
+<polyline points="75.00,308.16 166.43,337.70 349.29,351.33 715.00,355.72" fill="none" stroke="#dc2626" stroke-width="2"/>
+<circle cx="75.00" cy="308.16" r="4" fill="#dc2626"/>
+<circle cx="166.43" cy="337.70" r="4" fill="#dc2626"/>
+<circle cx="349.29" cy="351.33" r="4" fill="#dc2626"/>
+<circle cx="715.00" cy="355.72" r="4" fill="#dc2626"/>
+<text x="745" y="120" fill="#dc2626" font-family="sans-serif">MPI — N=2048</text>
+<polyline points="75.00,117.28 166.43,240.87 349.29,304.51 715.00,314.11" fill="none" stroke="#059669" stroke-width="2"/>
+<circle cx="75.00" cy="117.28" r="4" fill="#059669"/>
+<circle cx="166.43" cy="240.87" r="4" fill="#059669"/>
+<circle cx="349.29" cy="304.51" r="4" fill="#059669"/>
+<circle cx="715.00" cy="314.11" r="4" fill="#059669"/>
+<text x="745" y="145" fill="#059669" font-family="sans-serif">MPI — N=4096</text>
+<polyline points="75.00,354.39 166.43,361.66 349.29,364.05 715.00,367.65" fill="none" stroke="#9333ea" stroke-width="2"/>
+<circle cx="75.00" cy="354.39" r="4" fill="#9333ea"/>
+<circle cx="166.43" cy="361.66" r="4" fill="#9333ea"/>
+<circle cx="349.29" cy="364.05" r="4" fill="#9333ea"/>
+<circle cx="715.00" cy="367.65" r="4" fill="#9333ea"/>
+<text x="745" y="170" fill="#9333ea" font-family="sans-serif">OPENMP — N=1024 — static</text>
+<polyline points="75.00,306.96 166.43,336.91 349.29,353.59 715.00,360.50" fill="none" stroke="#d97706" stroke-width="2"/>
+<circle cx="75.00" cy="306.96" r="4" fill="#d97706"/>
+<circle cx="166.43" cy="336.91" r="4" fill="#d97706"/>
+<circle cx="349.29" cy="353.59" r="4" fill="#d97706"/>
+<circle cx="715.00" cy="360.50" r="4" fill="#d97706"/>
+<text x="745" y="195" fill="#d97706" font-family="sans-serif">OPENMP — N=2048 — static</text>
+<polyline points="75.00,101.82 166.43,228.37 349.29,295.99 715.00,322.96" fill="none" stroke="#0891b2" stroke-width="2"/>
+<circle cx="75.00" cy="101.82" r="4" fill="#0891b2"/>
+<circle cx="166.43" cy="228.37" r="4" fill="#0891b2"/>
+<circle cx="349.29" cy="295.99" r="4" fill="#0891b2"/>
+<circle cx="715.00" cy="322.96" r="4" fill="#0891b2"/>
+<text x="745" y="220" fill="#0891b2" font-family="sans-serif">OPENMP — N=4096 — static</text>
+</svg>

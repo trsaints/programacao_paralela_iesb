@@ -1,2 +1,1 @@
 implementacao,tipo_unidade,fonte,executavel,motivo
-openmp,threads,openmp/04_convolucao_openmp.cpp,openmp/convolucao_openmp.out,fonte não encontrada: openmp/04_convolucao_openmp.cpp

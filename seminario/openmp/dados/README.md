@@ -1,6 +1,7 @@
 # Dados da versão OpenMP
 
-`script_medicao.py` criará nesta pasta:
+`script_medicao.py` cria os diretórios `forte/` e `fraca/` nesta pasta. Cada
+um contém:
 
 - `openmp_medicoes.csv`: tempos brutos por thread e repetição;
 - `openmp_resumo.csv`: média, mediana e desvio-padrão por configuração.
