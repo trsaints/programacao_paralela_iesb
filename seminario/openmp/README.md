@@ -1,6 +1,6 @@
 # Versão OpenMP
 
-Esta pasta receberá `04_convolucao_openmp.cpp`.
+O código-fonte está em `04_convolucao_openmp.cpp`.
 
 ## Contrato com a automação
 
@@ -12,4 +12,4 @@ Esta pasta receberá `04_convolucao_openmp.cpp`.
   `N=... passes=... checksum=... tempo=... s`.
 
 O script `../script_medicao.py` valida o checksum contra o baseline e grava os
-dados em `openmp/dados/`.
+dados em `openmp/dados/forte/` ou `openmp/dados/fraca/`.

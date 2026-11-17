@@ -3,8 +3,8 @@
 > **Status: dados de desenvolvimento do baseline**
 >
 > Os dados experimentais estão preservados em
-> `baseline/dados/baseline_medicoes.csv` e
-> `baseline/dados/baseline_resumo.csv`. Antes da entrega/apresentação, os
+> `baseline/dados/forte/baseline_medicoes.csv` e
+> `baseline/dados/forte/baseline_resumo.csv`. Antes da entrega/apresentação, os
 > resultados finais devem ser confirmados no laboratório. A configuração de
 > desenvolvimento está registrada em [`HARDWARE.md`](HARDWARE.md).
 
@@ -102,8 +102,8 @@ maior que os percursos lineares de inicialização e checksum para `P = 30`.
 | 4096 | 30 | 10 | 2134674862.94 | 4.838058 | 4.801710 | 0.208169 |
 
 Os 30 tempos brutos e os resumos estatísticos estão, respectivamente, em
-`baseline/dados/baseline_medicoes.csv` e
-`baseline/dados/baseline_resumo.csv`. Para uma futura curva de speedup, a
+`baseline/dados/forte/baseline_medicoes.csv` e
+`baseline/dados/forte/baseline_resumo.csv`. Para uma futura curva de speedup, a
 mediana será usada como tempo de referência `T1`, pois é menos sensível a
 variações ocasionais do sistema operacional.
 

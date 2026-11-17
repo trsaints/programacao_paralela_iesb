@@ -37,24 +37,25 @@ python3 script_medicao.py
 python3 script_analise.py
 ```
 
-`script_medicao.py` é a única campanha de medição. Segue os tamanhos,
-repetições e colunas definidos no README do seminário e limita as unidades
+`script_medicao.py` é a única campanha de medição. Execute-o com
+`--campanha forte` ou `--campanha fraca`; ele segue os tamanhos, repetições e
+colunas definidos no README do seminário e limita as unidades
 às CPUs disponíveis. Antes de medir, verifica também os slots reais do OpenMPI;
 configurações sem slots suficientes são informadas como `SKIPPED`, sem
 ativar oversubscription. A contagem de CPUs lógicas pode ser maior que a
 quantidade de slots, pois o OpenMPI usa núcleos físicos por padrão.
 Valida todos os pixels em cada execução MPI (fora do
 tempo medido) e compara o checksum com o executável baseline original.
-Gera `mpi/dados/mpi_medicoes.csv`, `mpi/dados/mpi_resumo.csv` e as métricas
-compartilhadas em `dados/metricas.csv`, além dos CSVs do baseline e OpenMP
-quando disponível. A campanha sobrescreve os dados anteriores desses arquivos.
+Gera `mpi/dados/<campanha>/mpi_medicoes.csv`,
+`mpi/dados/<campanha>/mpi_resumo.csv` e as métricas compartilhadas em
+`dados/<campanha>/metricas.csv`, além dos CSVs do baseline e OpenMP quando
+disponível.
 
 Os tempos de comunicação e computação são um complemento em
-`mpi/dados/mpi_overhead.csv`, com as mesmas chaves de configuração e repetição
+`mpi/dados/<campanha>/mpi_overhead.csv`, com as mesmas chaves de configuração e repetição
 das medições MPI; as colunas dos arquivos padronizados permanecem intactas.
-O gerador geral lê `dados/metricas.csv` para tempo, speedup e eficiência e
-salva os gráficos comparativos em `graficos/` e os dedicados em cada pasta de
-implementação. Ele também lê `mpi_overhead.csv` para gerar as componentes de
+O gerador geral lê `dados/<campanha>/metricas.csv` e salva os gráficos
+dedicados em cada pasta de implementação. Ele também lê `mpi_overhead.csv` para gerar as componentes de
 comunicação e computação em `mpi/graficos/`, sem executar uma segunda campanha.
 Gere novamente a campanha padrão antes de atualizar os gráficos; não combine
 baselines de campanhas diferentes.

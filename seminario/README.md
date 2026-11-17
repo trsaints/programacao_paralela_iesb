@@ -128,10 +128,10 @@ na mesma campanha. Os detalhes específicos das versões futuras estão em
 
 ## Medições e CSVs
 
-Execute a campanha a partir desta pasta:
+Execute a campanha de escalabilidade forte a partir desta pasta:
 
 ```sh
-python3 script_medicao.py
+python3 script_medicao.py --campanha forte
 ```
 
 O comando compila diretamente cada implementação disponível e faz três
@@ -142,7 +142,8 @@ substituir os dados de desenvolvimento versionados.
 
 | Parâmetro padrão | Valor |
 | --- | ---: |
-| Tamanhos `N` | 1024, 2048 e 4096 |
+| Campanha | forte |
+| Tamanhos `N` | 1024, 2048 e 4096 para cada quantidade de unidades |
 | Passes | 30 |
 | Aquecimento descartado | 1 por configuração |
 | Repetições válidas | 2 por configuração |
@@ -157,57 +158,70 @@ alterar CSVs:
 python3 script_medicao.py --dry-run
 ```
 
-Os arquivos produzidos são:
+Para escalabilidade fraca, o tamanho cresce com as unidades de modo que
+`N² / unidades` permaneça aproximadamente constante:
 
-```text
-baseline/dados/baseline_medicoes.csv   # medições brutas do sequencial
-baseline/dados/baseline_resumo.csv     # média, mediana e desvio-padrão
-openmp/dados/openmp_medicoes.csv       # criado quando OpenMP estiver pronto
-openmp/dados/openmp_resumo.csv
-mpi/dados/mpi_medicoes.csv             # criado quando MPI estiver pronto
-mpi/dados/mpi_resumo.csv
-dados/metricas.csv                     # T1, Tp, speedup e eficiência
-dados/execucoes_ignoradas.csv          # versões indisponíveis na campanha
-mpi/dados/mpi_overhead.csv            # complemento: comunicação e computação MPI
+```sh
+python3 script_medicao.py --campanha fraca
 ```
 
-A matriz automática de unidades mede **escalabilidade forte** para
-cada tamanho fixo. A entrega final também exige análise de escalabilidade fraca:
-quando OpenMP e MPI forem implementados, planejem e registrem uma campanha em
-que o trabalho por unidade permaneça aproximadamente constante (por exemplo,
-mantendo `N² / P` aproximadamente constante). Não apresente uma curva fraca
-como concluída sem os dados brutos e a metodologia correspondente.
+| Unidades | `N` |
+| ---: | ---: |
+| 1 | 1024 |
+| 2 | 1448 |
+| 4 | 2048 |
+| 8 | 2896 |
+
+Os arquivos são separados por campanha:
+
+```text
+baseline/dados/<campanha>/baseline_medicoes.csv
+baseline/dados/<campanha>/baseline_resumo.csv
+openmp/dados/<campanha>/openmp_medicoes.csv
+openmp/dados/<campanha>/openmp_resumo.csv
+mpi/dados/<campanha>/mpi_medicoes.csv
+mpi/dados/<campanha>/mpi_resumo.csv
+mpi/dados/<campanha>/mpi_overhead.csv
+dados/<campanha>/metricas.csv
+dados/<campanha>/execucoes_ignoradas.csv
+```
+
+Na campanha forte, speedup e eficiência usam o baseline do mesmo `N`. Na
+campanha fraca, `tempo_relativo = Tp / Tref` e
+`eficiencia_fraca = Tref / Tp`, em que `Tref` é a mediana do baseline em
+`N=1024`.
 
 ## Gráficos sem dependência externa
 
 Importe os CSVs em LibreOffice Calc, Excel ou Google Sheets com codificação
 UTF-8, separador vírgula e decimal ponto. Para gerar automaticamente os gráficos
-gerais e os gráficos de cada implementação, execute após `python3 script_medicao.py`:
+gerais e os gráficos de cada implementação, execute após a campanha desejada:
 
 ```sh
-python3 script_analise.py
+python3 script_analise.py --campanha forte
+python3 script_analise.py --campanha fraca
 ```
 
-O gerador usa somente a biblioteca padrão, lê `dados/metricas.csv` e salva
-gráficos comparativos em `graficos/`, o tempo do baseline e gráficos de tempo,
-speedup e eficiência nas pastas de cada implementação. Não compila nem mede
-novamente. Quando há medições MPI, ele também usa `mpi/dados/mpi_overhead.csv`
-para gerar os gráficos de comunicação e computação MPI.
+O gerador usa somente a biblioteca padrão, lê
+`dados/<campanha>/metricas.csv` e salva os gráficos nas pastas da campanha.
+Não compila nem mede novamente. Quando há medições MPI, ele também usa
+`mpi/dados/<campanha>/mpi_overhead.csv` para gerar os gráficos de comunicação
+e computação MPI.
 
 | Gráfico | Dados de origem |
 | --- | --- |
-| Tempo do baseline por tamanho | `baseline/dados/baseline_resumo.csv`: `n` × `tempo_mediano_s` |
-| Tempo OpenMP ou MPI | `<implementacao>/dados/<implementacao>_resumo.csv`: `unidades` × `tempo_mediano_s` |
-| Speedup ou eficiência por implementação | `dados/metricas.csv`, filtrado por `implementacao` e `n` |
-| Comparativo OpenMP × MPI | `dados/metricas.csv`, com séries separadas por implementação e `n` |
-| Comunicação ou computação MPI | `mpi/dados/mpi_overhead.csv` |
+| Forte: tempo, speedup ou eficiência | `dados/forte/metricas.csv` |
+| Fraca: tempo relativo ou eficiência fraca | `dados/fraca/metricas.csv` |
+| Comunicação ou computação MPI | `mpi/dados/<campanha>/mpi_overhead.csv` |
 
 Versione gráficos específicos em cada implementação:
 
 ```text
-baseline/graficos/
-openmp/graficos/
-mpi/graficos/
+baseline/graficos/forte/
+openmp/graficos/forte/
+openmp/graficos/fraca/
+mpi/graficos/forte/
+mpi/graficos/fraca/
 ```
 
 Coloque gráficos comparativos e gerais em `graficos/`, ao lado dos relatórios
@@ -220,8 +234,9 @@ da implementação correspondente no ambiente oficial.
 2. Confirme que as fontes OpenMP e MPI existem e mantêm o resultado do
    baseline.
 3. No contêiner/laboratório, execute `make clean && make check-final`.
-4. Execute `python3 script_medicao.py` no mesmo ambiente e revise todos os
-   checksums, CSVs e `SKIPPED` (não deve restar nenhum para as três versões).
+4. Execute `python3 script_medicao.py --campanha forte` e
+   `python3 script_medicao.py --campanha fraca` no mesmo ambiente; revise todos
+   os checksums, CSVs e `SKIPPED` (não deve restar nenhum para as três versões).
 5. Gere e versione gráficos de tempo, speedup, eficiência, escalabilidade forte
    e fraca, com metodologia e ambiente identificados.
 6. Atualize o relatório com a máquina/contêiner, o número de CPUs visíveis e os
