@@ -5,17 +5,17 @@
 <text x="340" y="425" font-family="sans-serif">Tamanho da imagem (N)</text>
 <text x="8" y="55" font-family="sans-serif">Tempo (s)</text>
 <text x="8" y="375.0" font-family="sans-serif">0.00</text>
-<text x="8" y="316.0" font-family="sans-serif">1.02</text>
-<text x="8" y="257.0" font-family="sans-serif">2.03</text>
-<text x="8" y="198.0" font-family="sans-serif">3.05</text>
-<text x="8" y="139.0" font-family="sans-serif">4.07</text>
-<text x="8" y="80.0" font-family="sans-serif">5.08</text>
+<text x="8" y="316.0" font-family="sans-serif">0.40</text>
+<text x="8" y="257.0" font-family="sans-serif">0.81</text>
+<text x="8" y="198.0" font-family="sans-serif">1.21</text>
+<text x="8" y="139.0" font-family="sans-serif">1.62</text>
+<text x="8" y="80.0" font-family="sans-serif">2.02</text>
 <text x="75.0" y="395" font-family="sans-serif">1024</text>
 <text x="288.3" y="395" font-family="sans-serif">2048</text>
 <text x="715.0" y="395" font-family="sans-serif">4096</text>
-<polyline points="75.00,354.38 288.33,307.76 715.00,101.82" fill="none" stroke="#2563eb" stroke-width="2"/>
-<circle cx="75.00" cy="354.38" r="4" fill="#2563eb"/>
-<circle cx="288.33" cy="307.76" r="4" fill="#2563eb"/>
+<polyline points="75.00,352.86 288.33,305.68 715.00,101.82" fill="none" stroke="#2563eb" stroke-width="2"/>
+<circle cx="75.00" cy="352.86" r="4" fill="#2563eb"/>
+<circle cx="288.33" cy="305.68" r="4" fill="#2563eb"/>
 <circle cx="715.00" cy="101.82" r="4" fill="#2563eb"/>
 <text x="745" y="95" fill="#2563eb" font-family="sans-serif">Baseline</text>
 </svg>

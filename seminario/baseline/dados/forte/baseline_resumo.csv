@@ -1,0 +1,4 @@
+implementacao,tipo_unidade,unidades,escalonamento,n,passes,repeticoes,checksum,tempo_medio_s,tempo_mediano_s,desvio_padrao_s
+baseline,serial,1,,1024,30,2,132592104.90,0.117338,0.117338,0.010927628196456911
+baseline,serial,1,,2048,30,2,532566143.87,0.44032150000000003,0.44032150000000003,0.002421840725563894
+baseline,serial,1,,4096,30,2,2134674862.94,1.835957,1.835957,0.0017069557697842665

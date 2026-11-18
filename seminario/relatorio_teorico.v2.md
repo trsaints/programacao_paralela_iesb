@@ -97,11 +97,11 @@ maior que os percursos lineares de inicialização e checksum para `P = 30`.
 
 | N | Passes | Repetições | Checksum | Média (s) | Mediana (s) | Desvio-padrão (s) |
 | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| 1024 | 30 | 10 | 132592104.90 | 0.268782 | 0.267874 | 0.002795 |
-| 2048 | 30 | 10 | 532566143.87 | 1.079976 | 1.079629 | 0.005720 |
-| 4096 | 30 | 10 | 2134674862.94 | 4.838058 | 4.801710 | 0.208169 |
+| 1024 | 30 | 2 | 132592104.90 | 0.117338 | 0.117338 | 0.010928 |
+| 2048 | 30 | 2 | 532566143.87 | 0.440322 | 0.440322 | 0.002422 |
+| 4096 | 30 | 2 | 2134674862.94 | 1.835957 | 1.835957 | 0.001707 |
 
-Os 30 tempos brutos e os resumos estatísticos estão, respectivamente, em
+Os 6 tempos brutos e os resumos estatísticos estão, respectivamente, em
 `baseline/dados/forte/baseline_medicoes.csv` e
 `baseline/dados/forte/baseline_resumo.csv`. Para uma futura curva de speedup, a
 mediana será usada como tempo de referência `T1`, pois é menos sensível a

@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="440" viewBox="0 0 920 440">
+<rect width="920" height="440" fill="white"/>
+<text x="75" y="30" font-family="sans-serif" font-size="20">Eficiência — escalabilidade forte MPI</text>
+<path d="M75 65V370H715" fill="none" stroke="black"/>
+<text x="340" y="425" font-family="sans-serif">Processos MPI</text>
+<text x="8" y="55" font-family="sans-serif">Eficiência</text>
+<text x="8" y="375.0" font-family="sans-serif">0.00</text>
+<text x="8" y="316.0" font-family="sans-serif">0.23</text>
+<text x="8" y="257.0" font-family="sans-serif">0.46</text>
+<text x="8" y="198.0" font-family="sans-serif">0.69</text>
+<text x="8" y="139.0" font-family="sans-serif">0.92</text>
+<text x="8" y="80.0" font-family="sans-serif">1.15</text>
+<text x="75.0" y="395" font-family="sans-serif">1</text>
+<text x="166.4" y="395" font-family="sans-serif">2</text>
+<text x="349.3" y="395" font-family="sans-serif">4</text>
+<text x="715.0" y="395" font-family="sans-serif">8</text>
+<path d="M75.0 113.20259347897837 L715.0 113.20259347897837" stroke="gray" stroke-dasharray="5 5"/>
+<text x="745" y="65" font-family="sans-serif">Ideal (tracejado)</text>
+<polyline points="75.00,101.82 166.43,113.78 349.29,200.32 715.00,251.34" fill="none" stroke="#2563eb" stroke-width="2"/>
+<circle cx="75.00" cy="101.82" r="4" fill="#2563eb"/>
+<circle cx="166.43" cy="113.78" r="4" fill="#2563eb"/>
+<circle cx="349.29" cy="200.32" r="4" fill="#2563eb"/>
+<circle cx="715.00" cy="251.34" r="4" fill="#2563eb"/>
+<text x="745" y="95" fill="#2563eb" font-family="sans-serif">N=1024</text>
+<polyline points="75.00,114.77 166.43,140.84 349.29,175.46 715.00,252.92" fill="none" stroke="#dc2626" stroke-width="2"/>
+<circle cx="75.00" cy="114.77" r="4" fill="#dc2626"/>
+<circle cx="166.43" cy="140.84" r="4" fill="#dc2626"/>
+<circle cx="349.29" cy="175.46" r="4" fill="#dc2626"/>
+<circle cx="715.00" cy="252.92" r="4" fill="#dc2626"/>
+<text x="745" y="120" fill="#dc2626" font-family="sans-serif">N=2048</text>
+<polyline points="75.00,108.39 166.43,114.08 349.29,148.70 715.00,267.61" fill="none" stroke="#059669" stroke-width="2"/>
+<circle cx="75.00" cy="108.39" r="4" fill="#059669"/>
+<circle cx="166.43" cy="114.08" r="4" fill="#059669"/>
+<circle cx="349.29" cy="148.70" r="4" fill="#059669"/>
+<circle cx="715.00" cy="267.61" r="4" fill="#059669"/>
+<text x="745" y="145" fill="#059669" font-family="sans-serif">N=4096</text>
+</svg>

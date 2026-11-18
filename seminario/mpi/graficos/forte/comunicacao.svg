@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="440" viewBox="0 0 920 440">
+<rect width="920" height="440" fill="white"/>
+<text x="75" y="30" font-family="sans-serif" font-size="20">Comunicação — escalabilidade forte MPI</text>
+<path d="M75 65V370H715" fill="none" stroke="black"/>
+<text x="340" y="425" font-family="sans-serif">Processos MPI</text>
+<text x="8" y="55" font-family="sans-serif">Tempo (s)</text>
+<text x="8" y="375.0" font-family="sans-serif">0.00</text>
+<text x="8" y="316.0" font-family="sans-serif">0.05</text>
+<text x="8" y="257.0" font-family="sans-serif">0.09</text>
+<text x="8" y="198.0" font-family="sans-serif">0.14</text>
+<text x="8" y="139.0" font-family="sans-serif">0.19</text>
+<text x="8" y="80.0" font-family="sans-serif">0.23</text>
+<text x="75.0" y="395" font-family="sans-serif">1</text>
+<text x="166.4" y="395" font-family="sans-serif">2</text>
+<text x="349.3" y="395" font-family="sans-serif">4</text>
+<text x="715.0" y="395" font-family="sans-serif">8</text>
+<polyline points="75.00,368.20 166.43,364.48 349.29,350.23 715.00,350.92" fill="none" stroke="#2563eb" stroke-width="2"/>
+<circle cx="75.00" cy="368.20" r="4" fill="#2563eb"/>
+<circle cx="166.43" cy="364.48" r="4" fill="#2563eb"/>
+<circle cx="349.29" cy="350.23" r="4" fill="#2563eb"/>
+<circle cx="715.00" cy="350.92" r="4" fill="#2563eb"/>
+<text x="745" y="95" fill="#2563eb" font-family="sans-serif">N=1024</text>
+<polyline points="75.00,362.92 166.43,348.08 349.29,334.82 715.00,353.40" fill="none" stroke="#dc2626" stroke-width="2"/>
+<circle cx="75.00" cy="362.92" r="4" fill="#dc2626"/>
+<circle cx="166.43" cy="348.08" r="4" fill="#dc2626"/>
+<circle cx="349.29" cy="334.82" r="4" fill="#dc2626"/>
+<circle cx="715.00" cy="353.40" r="4" fill="#dc2626"/>
+<text x="745" y="120" fill="#dc2626" font-family="sans-serif">N=2048</text>
+<polyline points="75.00,334.98 166.43,316.90 349.29,303.18 715.00,101.82" fill="none" stroke="#059669" stroke-width="2"/>
+<circle cx="75.00" cy="334.98" r="4" fill="#059669"/>
+<circle cx="166.43" cy="316.90" r="4" fill="#059669"/>
+<circle cx="349.29" cy="303.18" r="4" fill="#059669"/>
+<circle cx="715.00" cy="101.82" r="4" fill="#059669"/>
+<text x="745" y="145" fill="#059669" font-family="sans-serif">N=4096</text>
+</svg>
