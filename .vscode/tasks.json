@@ -25,6 +25,28 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "type": "cppbuild",
+            "label": "C/C++: build 04_convolucao (debug, -O0)",
+            "command": "/usr/bin/g++",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-g",
+                "-O0", // Sem otimizações: o depurador acompanha o fonte
+                "-Wall",
+                "-Wextra",
+                "${workspaceFolder}/seminario/baseline/04_convolucao.cpp",
+                "-o",
+                "${workspaceFolder}/seminario/baseline/convolucao_debug.out"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/seminario/baseline"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build"
         }
     ]
 }

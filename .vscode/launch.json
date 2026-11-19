@@ -14,6 +14,24 @@
             "MIMode": "gdb",
             "miDebuggerPath": "/usr/bin/gdb",
             "preLaunchTask": "C/C++: build coeficiente_variacao"
+        },
+        {
+            "name": "Depurar 04_convolucao (baseline, -O0)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/seminario/baseline/convolucao_debug.out",
+            // N e passes pequenos para depurar sem esperar a carga completa.
+            "args": [
+                "256",
+                "2"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/seminario/baseline",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "preLaunchTask": "C/C++: build 04_convolucao (debug, -O0)"
         }
     ]
 }
